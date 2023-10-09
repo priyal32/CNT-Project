@@ -28,7 +28,6 @@ public class StartRemotePeers {
 		try {
 			BufferedReader in = new BufferedReader(new FileReader("PeerInfo.cfg"));
 			while((st = in.readLine()) != null) {
-				
 				 String[] tokens = st.split("\\s+");
 		    	 //System.out.println("tokens begin ----");
 			     //for (int x=0; x<tokens.length; x++) {
