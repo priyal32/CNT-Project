@@ -9,7 +9,7 @@ public class Server {
 	private static final int sPort = 8000;   //The server will be listening on this port number
 
 	public static void main(String[] args) throws Exception {
-		System.out.println("The server is running."); 
+		System.out.println("The server is running.");
         	ServerSocket listener = new ServerSocket(sPort);
 		int clientNum = 1;
         	try {
@@ -28,16 +28,16 @@ public class Server {
      	* A handler thread class.  Handlers are spawned from the listening
      	* loop and are responsible for dealing with a single client's requests.
      	*/
-    	private static class Handler extends Thread {
-        	private String message;    //message received from the client
-		private String MESSAGE;    //uppercase message send to the client
-		private Socket connection;
+    	static class Handler extends Thread {
+			private String message;    //message received from the client
+			private String MESSAGE;    //uppercase message send to the client
+			private Socket connection;
         	private ObjectInputStream in;	//stream read from the socket
         	private ObjectOutputStream out;    //stream write to the socket
-		private int no;		//The index number of the client
+			private int no;		//The index number of the client
 
         	public Handler(Socket connection, int no) {
-            		this.connection = connection;
+				this.connection = connection;
 	    		this.no = no;
         	}
 
