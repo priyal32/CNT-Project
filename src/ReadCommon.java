@@ -33,7 +33,7 @@ public class ReadCommon {
 
     public int getPieceSize() { return pieceSize; }
 
-    public void readFile(String filename) {
+    public void readCommonFile(String filename) {
         File file = new File("Common.cfg");
         int prefferedNeighbors;
         int unchokingIntervals;
@@ -65,7 +65,7 @@ public class ReadCommon {
             fileSize = network.get(4);
             pieceSize = network.get(5);
             
-            //ReadCommon common = ReadCommon(prefferedNeighbors, unchokingIntervals, optimisticUnchokingInterval, fileName, fileSize, pieceSize);
+            ReadCommon common = ReadCommon(prefferedNeighbors, unchokingIntervals, optimisticUnchokingInterval, fileName, fileSize, pieceSize);
 
         } 
         catch (FileNotFoundException e) {
