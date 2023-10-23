@@ -11,7 +11,8 @@ public class Common {
     private final int fileSize;
     private final int pieceSize;
 
-    public Common(int numOfPrefNeighbors, int unchokingInterval, int optimisticUnChokingInterval, String fileName,
+    public Common(int numOfPrefNeighbors, int unchokingInterval,
+                  int optimisticUnChokingInterval, String fileName,
                   int fileSize, int pieceSize)
     {
         this.numOfPrefNeighbors = numOfPrefNeighbors;
@@ -22,7 +23,7 @@ public class Common {
         this.pieceSize = pieceSize;
     }
 
-    public Common readCommonFile(String fileName)
+    public static Common readCommonFile(String fileName)
     {
         File commonFile = new File(fileName);
         ArrayList<String> fileContents = new ArrayList<>();
