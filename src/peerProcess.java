@@ -19,6 +19,10 @@ public class peerProcess {
 
         // get port of that peer id as the peer will listen to that port
         ArrayList<Peer> peerInfo = readPeerFile("localPeerInfo.cfg");
+
+        // have the peer process read the common attributes
+        Common common = Common.readCommonFile("Common.cfg");
+
         peerServer server = null;
         for(Peer peer : peerInfo){
             if(peer.getId() == p2p.peerID){
