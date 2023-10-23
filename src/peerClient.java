@@ -22,8 +22,8 @@ public class peerClient implements Runnable{
 
         try {
 
-            // localhost should be changed to dest.getHost later
-            requestSocket = new Socket("localhost", dest.getPort());
+
+            requestSocket = new Socket(dest.getHost(), dest.getPort());
             System.out.println("Client " + src.getId() +  " connected to client id " + dest.getId() + " on " + dest.getHost() + " in port " + dest.getPort());
             out = new ObjectOutputStream(requestSocket.getOutputStream());
             out.flush();

@@ -8,7 +8,6 @@ import java.util.Scanner;
 
 public class peerProcess {
 
-    int listeningPort = -1;
     int peerID = -1;
 
     // takes in peer id of the peer to start with
@@ -19,7 +18,7 @@ public class peerProcess {
         Peer currPeer = null;
 
         // get port of that peer id as the peer will listen to that port
-        ArrayList<Peer> peerInfo = readPeerFile("PeerInfo.cfg");
+        ArrayList<Peer> peerInfo = readPeerFile("localPeerInfo.cfg");
         peerServer server = null;
         for(Peer peer : peerInfo){
             if(peer.getId() == p2p.peerID){
@@ -45,7 +44,8 @@ public class peerProcess {
         ClassLoader classLoader = peerProcess.class.getClassLoader();
 
         // Load the file using the class loader
-        InputStream file = classLoader.getResourceAsStream("localPeerInfo.cfg");        int id;
+        InputStream file = classLoader.getResourceAsStream(filename);
+        int id;
         String host;
         int port;
         boolean hasFile;
