@@ -26,6 +26,8 @@ public class peerClient implements Runnable{
             requestSocket = new Socket(dest.getHost(), dest.getPort());
             System.out.println("Client " + src.getId() +  " connected to client id " + dest.getId() + " on " + dest.getHost() + " in port " + dest.getPort());
             out = new ObjectOutputStream(requestSocket.getOutputStream());
+            in = new ObjectInputStream(requestSocket.getInputStream());
+
             out.flush();
 
 
@@ -34,6 +36,9 @@ public class peerClient implements Runnable{
                 System.out.println("Sending handshake to " + dest.getHost() + " in "  + dest.getPort());
                 //String msg = "Client to Server Handshake";
                 Handshake handshake = new Handshake(src.getId());
+                byte[] bitfield = src.getBitfield().getBytes();
+
+                Message message = new Message(Type.BitField, bitfield);
                 try{
                     //stream write the message
                     handshake.sendHandShake(out);
@@ -45,31 +50,15 @@ public class peerClient implements Runnable{
 
             try {
                 while (true) {
-                    try {
-                        in = new ObjectInputStream(requestSocket.getInputStream());
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
-                    // Receive the Handshake from the Server
-                    byte[] header = new byte[18];
-                    byte[] zeroBytes = new byte[10];
-                    byte[] peerID = new byte[Integer.BYTES];
+                    handshake.readHandShake(in);
+                    message.writeMessage(out);
+                    out.flush();
+                    System.out.println("sent bitfield from peer");
+                    message.readMessage(in);
+                    System.out.println("read bitfield from peer");
 
-                    int headerlen = in.read(header);
-                    // convert byte[] to string
-                    String msg = new String(header, StandardCharsets.UTF_8);
-
-                    // should give 10 as there are 10-byte zero bits
-                    int zeroBytesRead = in.read(zeroBytes);
-
-                    int peerIDBytes = in.read(peerID);
-                    int peerIDVal = 0;
-                    for (byte b : peerID) {
-                        peerIDVal = (peerIDVal << 8) + (b & 0xFF);
-                    }
-
-                    System.out.println("Client " + src.getId() + " received handshake with msg : " + msg + " " + zeroBytesRead + " from client " + peerIDVal);
                 }
+
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }

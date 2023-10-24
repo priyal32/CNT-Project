@@ -37,4 +37,28 @@ public class Handshake {
         out.write(peerID);
 
     }
+
+    public void readHandShake(InputStream in) throws IOException {
+
+        // Receive the Handshake
+        byte[] header = new byte[18];
+        byte[] zeroBytes = new byte[10];
+        byte[] peerID = new byte[Integer.BYTES];
+
+        int headerlen = in.read(header);
+        // convert byte[] to string
+        String msg = new String(header, StandardCharsets.UTF_8);
+
+        // should give 10 as there are 10-byte zero bits
+        int zeroBytesRead = in.read(zeroBytes);
+
+        int peerIDBytes = in.read(peerID);
+        int peerIDVal = 0;
+        for (byte b : peerID) {
+            peerIDVal = (peerIDVal << 8) + (b & 0xFF);
+        }
+
+        System.out.println("Client/Server " + id + " received handshake with msg : " + msg + " " + zeroBytesRead + " from client " + peerIDVal);
+
+    }
 }

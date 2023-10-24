@@ -48,43 +48,33 @@ public class peerServer implements Runnable {
                 while(true) {
                     // read message from client
                     // first read handshake
-                    byte[] header = new byte[18];
-                    byte[] zeroBytes = new byte[10];
-                    byte[] peerID = new byte[Integer.BYTES];
-
-                    int headerlen = in.read(header);
-                    //System.out.println(headerlen);
-                    // convert byte[] to string
-                    String msg = new String(header, StandardCharsets.UTF_8);
-
-                    // should give 10 as there are 10-byte zero bits
-                    int zeroBytesRead = in.read(zeroBytes);
-                    //System.out.println(zeroBytesRead);
-
-                    int peerIDBytes = in.read(peerID);
-                    //System.out.println(peerIDBytes);
-                    int peerIDVal = 0;
-                    for (byte b : peerID) {
-                        peerIDVal = (peerIDVal << 8) + (b & 0xFF);
-                    }
-
-                    System.out.println("Server " + peer.getId() + " received handshake with msg : " + msg + " " + zeroBytesRead + " from client " + peerIDVal);
-
+                    Handshake handshake = new Handshake(peer.getId());
+                    handshake.readHandShake(in);
                     // send Handshake back to the client
                     try {
-                        Handshake handshake = new Handshake(peer.getId());
                         handshake.sendHandShake(out);
                         out.flush();
 
                     } catch (IOException ioException) {
                         ioException.printStackTrace();
                     }
+                    byte[] bitfield = peer.getBitfield().getPayload();
+
+                    Message message = new Message(Type.BitField, bitfield);
+                    message.writeMessage(out);
+                    out.flush();
+                    System.out.println("Bitfield sent");
+
+                    message.readMessage(in);
+                    System.out.println("Bitfield received");
+
                 }
            } catch (IOException e) {
                 throw new RuntimeException(e);
             } finally{
             // Close connections
                 try{
+
                     in.close();
                     out.close();
                     connectionSocket.close();
