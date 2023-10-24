@@ -1,5 +1,6 @@
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -25,29 +26,24 @@ public class Common {
 
     public static Common readCommonFile(String fileName)
     {
-        File commonFile = new File(fileName);
+        ClassLoader classLoader = peerProcess.class.getClassLoader();
+        InputStream commonFile = classLoader.getResourceAsStream(fileName);
+
         ArrayList<String> fileContents = new ArrayList<>();
 
-        try
+        Scanner sc = new Scanner(commonFile);
+        while(sc.hasNextLine())
         {
-            Scanner sc = new Scanner(commonFile);
-            while(sc.hasNextLine())
-            {
-                String line = sc.nextLine();
-                // split to get the actual content of the cfg
-                String[] item = line.split(" ");
-                fileContents.add(item[1]);
-            }
-            sc.close();
+            String line = sc.nextLine();
+            // split to get the actual content of the cfg
+            String[] item = line.split(" ");
+            fileContents.add(item[1]);
+        }
+        sc.close();
 
-            return new Common(Integer.parseInt(fileContents.get(0)), Integer.parseInt(fileContents.get(1)),
-                    Integer.parseInt(fileContents.get(2)), fileContents.get(3), Integer.parseInt(fileContents.get(4)),
-                    Integer.parseInt(fileContents.get(5)));
-        }
-        catch (FileNotFoundException e)
-        {
-            throw new RuntimeException(e);
-        }
+        return new Common(Integer.parseInt(fileContents.get(0)), Integer.parseInt(fileContents.get(1)),
+                Integer.parseInt(fileContents.get(2)), fileContents.get(3), Integer.parseInt(fileContents.get(4)),
+                Integer.parseInt(fileContents.get(5)));
     }
 
     public int getNumOfPrefNeighbors()
