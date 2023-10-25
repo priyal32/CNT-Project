@@ -25,9 +25,11 @@ public class StartRemotePeers {
 		String st;
 		int i1;
 		peerInfoVector = new Vector<RemotePeerInfo>();
-		try {
+		try
+		{
 			BufferedReader in = new BufferedReader(new FileReader("PeerInfo.cfg"));
-			while((st = in.readLine()) != null) {
+			while((st = in.readLine()) != null)
+			{
 				 String[] tokens = st.split("\\s+");
 		    	 //System.out.println("tokens begin ----");
 			     //for (int x=0; x<tokens.length; x++) {
@@ -41,7 +43,8 @@ public class StartRemotePeers {
 			
 			in.close();
 		}
-		catch (Exception ex) {
+		catch (Exception ex)
+		{
 			System.out.println(ex.toString());
 		}
 	}
@@ -49,9 +52,11 @@ public class StartRemotePeers {
 	/**
 	 * @param args
 	 */
-	public static void main(String[] args) {
+	public static void main(String[] args)
+	{
 		// TODO Auto-generated method stub
-		try {
+		try
+		{
 			StartRemotePeers myStart = new StartRemotePeers();
 			myStart.getConfiguration();
 					
@@ -59,7 +64,8 @@ public class StartRemotePeers {
 			String path = System.getProperty("user.dir");
 			
 			// start clients at remote hosts
-			for (int i = 0; i < myStart.peerInfoVector.size(); i++) {
+			for (int i = 0; i < myStart.peerInfoVector.size(); i++)
+			{
 				RemotePeerInfo pInfo = (RemotePeerInfo) myStart.peerInfoVector.elementAt(i);
 				
 				System.out.println("Start remote peer " + pInfo.peerId +  " at " + pInfo.peerAddress );
@@ -74,7 +80,8 @@ public class StartRemotePeers {
 			System.out.println("Starting all remote peers has done." );
 
 		}
-		catch (Exception ex) {
+		catch (Exception ex)
+		{
 			System.out.println(ex);
 		}
 	}

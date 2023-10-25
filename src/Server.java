@@ -8,18 +8,23 @@ public class Server {
 
 	private static final int sPort = 8000;   //The server will be listening on this port number
 
-	public static void main(String[] args) throws Exception {
+	public static void main(String[] args) throws Exception
+	{
 		System.out.println("The server is running.");
-        	ServerSocket listener = new ServerSocket(sPort);
+		ServerSocket listener = new ServerSocket(sPort);
 		int clientNum = 1;
-        	try {
-            		while(true) {
+        	try
+			{
+            		while(true)
+					{
                 		new Handler(listener.accept(),clientNum).start();
-				System.out.println("Client "  + clientNum + " is connected!");
-				clientNum++;
-            			}
-        	} finally {
-            		listener.close();
+						System.out.println("Client "  + clientNum + " is connected!");
+						clientNum++;
+					}
+        	}
+			finally
+			{
+				listener.close();
         	} 
  
     	}
@@ -28,7 +33,8 @@ public class Server {
      	* A handler thread class.  Handlers are spawned from the listening
      	* loop and are responsible for dealing with a single client's requests.
      	*/
-    	static class Handler extends Thread {
+	static class Handler extends Thread
+	{
 			private String message;    //message received from the client
 			private String MESSAGE;    //uppercase message send to the client
 			private Socket connection;
@@ -36,18 +42,22 @@ public class Server {
         	private ObjectOutputStream out;    //stream write to the socket
 			private int no;		//The index number of the client
 
-        	public Handler(Socket connection, int no) {
+        	public Handler(Socket connection, int no)
+			{
 				this.connection = connection;
 	    		this.no = no;
         	}
 
-        public void run() {
- 		try{
+        public void run()
+		{
+ 		try
+		{
 			//initialize Input and Output streams
 			out = new ObjectOutputStream(connection.getOutputStream());
 			out.flush();
 			in = new ObjectInputStream(connection.getInputStream());
-			try{
+			try
+			{
 				while(true)
 				{
 					//receive the message sent from the client
@@ -60,21 +70,26 @@ public class Server {
 					sendMessage(MESSAGE);
 				}
 			}
-			catch(ClassNotFoundException classnot){
+			catch(ClassNotFoundException classnot)
+			{
 					System.err.println("Data received in unknown format");
 				}
 		}
-		catch(IOException ioException){
+		catch(IOException ioException)
+		{
 			System.out.println("Disconnect with Client " + no);
 		}
-		finally{
+		finally
+		{
 			//Close connections
-			try{
+			try
+			{
 				in.close();
 				out.close();
 				connection.close();
 			}
-			catch(IOException ioException){
+			catch(IOException ioException)
+			{
 				System.out.println("Disconnect with Client " + no);
 			}
 		}
@@ -83,16 +98,17 @@ public class Server {
 	//send a message to the output stream
 	public void sendMessage(String msg)
 	{
-		try{
+		try
+		{
 			out.writeObject(msg);
 			out.flush();
 			System.out.println("Send message: " + msg + " to Client " + no);
 		}
-		catch(IOException ioException){
+		catch(IOException ioException)
+		{
 			ioException.printStackTrace();
 		}
 	}
 
     }
-
 }

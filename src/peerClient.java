@@ -12,15 +12,18 @@ public class peerClient implements Runnable{
 
     Peer src;
     Peer dest;
-    public peerClient(Peer src, Peer dest){
+    public peerClient(Peer src, Peer dest)
+    {
         this.src = src;
         this.dest = dest;
     }
 
     @Override
-    public void run() {
+    public void run()
+    {
 
-        try {
+        try
+        {
 
 
             requestSocket = new Socket(dest.getHost(), dest.getPort());
@@ -39,17 +42,21 @@ public class peerClient implements Runnable{
                 byte[] bitfield = src.getBitfield().getBytes();
 
                 Message message = new Message(Type.BitField, bitfield);
-                try{
+                try
+                {
                     //stream write the message
                     handshake.sendHandShake(out);
                     out.flush();
                 }
-                catch(IOException ioException){
+                catch(IOException ioException)
+                {
                     ioException.printStackTrace();
                 }
 
-            try {
-                while (true) {
+            try
+            {
+                while (true)
+                {
                     handshake.readHandShake(in);
                     message.writeMessage(out);
                     out.flush();
@@ -59,10 +66,14 @@ public class peerClient implements Runnable{
 
                 }
 
-            } catch (IOException e) {
+            }
+            catch (IOException e)
+            {
                 throw new RuntimeException(e);
             }
-        } catch (IOException e) {
+        }
+        catch (IOException e)
+        {
             throw new RuntimeException(e);
         }
 

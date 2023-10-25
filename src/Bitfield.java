@@ -16,29 +16,38 @@ public class Bitfield extends Message{
         initializePieces(numPieces);
     }
 
-    public void initializePieces(int numPieces){
-        for(int i = 0; i < numPieces; i++){
+    public void initializePieces(int numPieces)
+    {
+        for(int i = 0; i < numPieces; i++)
+        {
             this.pieces[i] = new Piece();
         }
     }
-    public int getNumPieces() {
+    public int getNumPieces()
+    {
+
         return numPieces;
     }
 
-    public void setNumPieces(int numPieces) {
+    public void setNumPieces(int numPieces)
+    {
         this.numPieces = numPieces;
     }
 
-    public Piece[] getPieces() {
+    public Piece[] getPieces()
+    {
         return pieces;
     }
 
-    public void setPieces(Piece[] pieces) {
+    public void setPieces(Piece[] pieces)
+    {
         this.pieces = pieces;
     }
 
-    public void printPieces(Piece[] pieces){
-        for(Piece p : pieces){
+    public void printPieces(Piece[] pieces)
+    {
+        for(Piece p : pieces)
+        {
             System.out.print(p.Present + " ");
         }
         System.out.println();
@@ -48,7 +57,8 @@ public class Bitfield extends Message{
         return this.getBytes();
     }
 
-    public byte[] getBytes(){
+    public byte[] getBytes()
+    {
         int s = (int) Math.ceil((double) this.numPieces / 8);
 
         byte[] arr = new byte[s];
@@ -81,26 +91,32 @@ public class Bitfield extends Message{
 
     }
 
-    public void printBytes(byte[] arr){
-        for(byte b : arr){
+    public void printBytes(byte[] arr)
+    {
+        for(byte b : arr)
+        {
             System.out.print(b + " ");
         }
         System.out.println();
     }
-    public void initializeBitfield(int OwnPeerId, boolean hasFile) {
-
+    public void initializeBitfield(int OwnPeerId, boolean hasFile)
+    {
         if (!hasFile) {
 
             // If no file
-            for (int i = 0; i < this.numPieces; i++) {
+            for (int i = 0; i < this.numPieces; i++)
+            {
                 this.pieces[i].setPresent(0);
                 this.pieces[i].setPeerID(OwnPeerId);
             }
 
-        } else {
+        }
+        else
+        {
 
             // If file
-            for (int i = 0; i < this.numPieces; i++) {
+            for (int i = 0; i < this.numPieces; i++)
+            {
                 this.pieces[i].setPresent(1);
                 this.pieces[i].setPeerID(OwnPeerId);
             }

@@ -18,9 +18,12 @@ public enum Type {
         return type;
     }
 
-    public static Type valueOf (byte b) {
-        for (Type t : Type.values()) {
-            if (t.type == b) {
+    public static Type valueOf (byte b)
+    {
+        for (Type t : Type.values())
+        {
+            if (t.type == b)
+            {
                 return t;
             }
         }

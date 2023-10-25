@@ -1,5 +1,6 @@
 public class NotInterested extends Message{
-    public NotInterested() {
+    public NotInterested()
+    {
         super(Type.NotInterested);
     }
 }

@@ -4,7 +4,8 @@ import java.nio.*;
 import java.nio.channels.*;
 import java.util.*;
 
-public class Client {
+public class Client
+{
 	Socket requestSocket;           //socket connect to the server
 	ObjectOutputStream out;         //stream write to the socket
  	ObjectInputStream in;          //stream read from the socket
@@ -15,7 +16,8 @@ public class Client {
 
 	void run()
 	{
-		try{
+		try
+		{
 			String path = System.getProperty("user.dir");
 
 			//create a socket to connect to the server
@@ -43,26 +45,33 @@ public class Client {
 				System.out.println("Receive message: " + MESSAGE);
 			}
 		}
-		catch (ConnectException e) {
+		catch (ConnectException e)
+		{
     			System.err.println("Connection refused. You need to initiate a server first.");
 		}
-		catch ( ClassNotFoundException e ) {
+		catch ( ClassNotFoundException e )
+		{
             		System.err.println("Class not found");
-        	}
-		catch(UnknownHostException unknownHost){
+		}
+		catch(UnknownHostException unknownHost)
+		{
 			System.err.println("You are trying to connect to an unknown host!");
 		}
-		catch(IOException ioException){
+		catch(IOException ioException)
+		{
 			ioException.printStackTrace();
 		}
-		finally{
+		finally
+		{
 			//Close connections
-			try{
+			try
+			{
 				in.close();
 				out.close();
 				requestSocket.close();
 			}
-			catch(IOException ioException){
+			catch(IOException ioException)
+			{
 				ioException.printStackTrace();
 			}
 		}
@@ -70,12 +79,14 @@ public class Client {
 	//send a message to the output stream
 	void sendMessage(String msg)
 	{
-		try{
+		try
+		{
 			//stream write the message
 			out.writeObject(msg);
 			out.flush();
 		}
-		catch(IOException ioException){
+		catch(IOException ioException)
+		{
 			ioException.printStackTrace();
 		}
 	}

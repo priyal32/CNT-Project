@@ -11,16 +11,19 @@ public class Peer {
     private final Boolean hasFile;
     ArrayList<Peer> beforePeers;
 
-    public Bitfield getBitfield() {
+    public Bitfield getBitfield()
+    {
         return bitfield;
     }
 
-    public void setBitfield(Bitfield bitfield) {
+    public void setBitfield(Bitfield bitfield)
+    {
         this.bitfield = bitfield;
     }
 
     Bitfield bitfield;
-    public Peer(int id, String host, int port, Boolean hasFile, ArrayList<Peer> beforePeers) {
+    public Peer(int id, String host, int port, Boolean hasFile, ArrayList<Peer> beforePeers)
+    {
         this.id = id;
         this.host = host;
         this.port = port;
@@ -29,18 +32,31 @@ public class Peer {
         bitfield = new Bitfield();
     }
 
-    public ArrayList<Peer> getBeforePeers(){
+    public ArrayList<Peer> getBeforePeers()
+    {
         return beforePeers;
     }
 
 
-    public int getId() { return id; }
+    public int getId()
+    {
+        return id;
+    }
 
-    public String getHost() { return host; }
+    public String getHost()
+    {
+        return host;
+    }
 
-    public int getPort() { return port; }
+    public int getPort()
+    {
+        return port;
+    }
 
-    public Boolean haveFile() { return hasFile; }
+    public Boolean haveFile()
+    {
+        return hasFile;
+    }
 
 
 }

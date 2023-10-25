@@ -14,12 +14,14 @@ public class Handshake {
     public final byte ZEROES = 10;
     public final byte PEERID = 4;
 
-    public Handshake(int id) {
+    public Handshake(int id)
+    {
         this.id = id;
     }
 
     // send handshake to dest;
-    public void sendHandShake(OutputStream out) throws IOException {
+    public void sendHandShake(OutputStream out) throws IOException
+    {
 
         byte[] header = HEADER.getBytes(StandardCharsets.UTF_8);
         out.write(header);
@@ -30,7 +32,8 @@ public class Handshake {
         int srcID = id;
         byte[] peerID = new byte[Integer.BYTES];
         int length = peerID.length;
-        for (int i = 0; i < length; i++) {
+        for (int i = 0; i < length; i++)
+        {
             peerID[length - i - 1] = (byte) (srcID & 0xFF);
             srcID >>= 8;
         }
@@ -38,7 +41,8 @@ public class Handshake {
 
     }
 
-    public void readHandShake(InputStream in) throws IOException {
+    public void readHandShake(InputStream in) throws IOException
+    {
 
         // Receive the Handshake
         byte[] header = new byte[18];
@@ -54,7 +58,8 @@ public class Handshake {
 
         int peerIDBytes = in.read(peerID);
         int peerIDVal = 0;
-        for (byte b : peerID) {
+        for (byte b : peerID)
+        {
             peerIDVal = (peerIDVal << 8) + (b & 0xFF);
         }
 

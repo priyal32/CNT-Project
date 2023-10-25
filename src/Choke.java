@@ -1,5 +1,6 @@
 public class Choke extends Message{
-    public Choke() {
+    public Choke()
+    {
         super(Type.Choke);
     }
 }

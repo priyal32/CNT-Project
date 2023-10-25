@@ -1,45 +1,55 @@
 import java.nio.ByteBuffer;
 
-public class Piece extends Message {
+public class Piece extends Message
+{
     int index;
     byte[] filePiece;
     int peerID;
     int Present = 0;
 
-    public int getIndex() {
+    public int getIndex()
+    {
         return index;
     }
 
-    public void setIndex(int index) {
+    public void setIndex(int index)
+    {
         this.index = index;
     }
 
-    public byte[] getFilePiece() {
+    public byte[] getFilePiece()
+    {
         return filePiece;
     }
 
-    public void setFilePiece(byte[] filePiece) {
+    public void setFilePiece(byte[] filePiece)
+    {
         this.filePiece = filePiece;
     }
 
-    public int getPeerID() {
+    public int getPeerID()
+    {
         return peerID;
     }
 
-    public void setPeerID(int peerID) {
+    public void setPeerID(int peerID)
+    {
         this.peerID = peerID;
     }
 
-    public int isPresent() {
+    public int isPresent()
+    {
         return Present;
     }
 
-    public void setPresent(int present) {
+    public void setPresent(int present)
+    {
         Present = present;
     }
 
 
-    public Piece(){
+    public Piece()
+    {
         super(Type.Piece);
         Common common = Common.readCommonFile("Common.cfg");
         filePiece = new byte[common.getPieceSize()];
@@ -49,8 +59,10 @@ public class Piece extends Message {
 
     }
 
-    public Piece decodePiece(byte[] payload){
-        if(payload.length < 4){
+    public Piece decodePiece(byte[] payload)
+    {
+        if(payload.length < 4)
+        {
             return null;
         }
         // extract first 4 bytes as that is message length
