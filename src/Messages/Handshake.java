@@ -1,8 +1,9 @@
-import java.io.*;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
+package Messages;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 
 public class Handshake {
 
@@ -11,8 +12,29 @@ public class Handshake {
     public final String HEADER = "P2PFILESHARINGPROJ";
 
     int id;
+
+    public String getPeerHeader() {
+        return peerHeader;
+    }
+
+    public void setPeerHeader(String peerHeader) {
+        this.peerHeader = peerHeader;
+    }
+
+    String peerHeader;
     public final byte ZEROES = 10;
     public final byte PEERID = 4;
+
+    public int getPeerId() {
+        return peerId;
+    }
+
+    public void setPeerId(int peerId) {
+        this.peerId = peerId;
+    }
+
+    public int peerId;
+
 
     public Handshake(int id) {
         this.id = id;
@@ -40,7 +62,7 @@ public class Handshake {
 
     public void readHandShake(InputStream in) throws IOException {
 
-        // Receive the Handshake
+        // Receive the Messages.Handshake
         byte[] header = new byte[18];
         byte[] zeroBytes = new byte[10];
         byte[] peerID = new byte[Integer.BYTES];
@@ -48,17 +70,17 @@ public class Handshake {
         int headerlen = in.read(header);
         // convert byte[] to string
         String msg = new String(header, StandardCharsets.UTF_8);
-
+        setPeerHeader(msg);
         // should give 10 as there are 10-byte zero bits
         int zeroBytesRead = in.read(zeroBytes);
 
         int peerIDBytes = in.read(peerID);
-        int peerIDVal = 0;
+        peerId = 0;
         for (byte b : peerID) {
-            peerIDVal = (peerIDVal << 8) + (b & 0xFF);
+            peerId = (peerId << 8) + (b & 0xFF);
         }
 
-        System.out.println("Client/Server " + id + " received handshake with msg : " + msg + " " + zeroBytesRead + " from client " + peerIDVal);
+        // System.out.println("Client/Server " + id + " received handshake with msg : " + msg + " " + zeroBytesRead + " from server/client " + peerId);
 
     }
 }

@@ -15,7 +15,7 @@ public class Server {
         	try {
             		while(true) {
                 		new Handler(listener.accept(),clientNum).start();
-				System.out.println("Client "  + clientNum + " is connected!");
+				System.out.println("Peer.Client "  + clientNum + " is connected!");
 				clientNum++;
             			}
         	} finally {
@@ -65,7 +65,7 @@ public class Server {
 				}
 		}
 		catch(IOException ioException){
-			System.out.println("Disconnect with Client " + no);
+			System.out.println("Disconnect with Peer.Client " + no);
 		}
 		finally{
 			//Close connections
@@ -75,7 +75,7 @@ public class Server {
 				connection.close();
 			}
 			catch(IOException ioException){
-				System.out.println("Disconnect with Client " + no);
+				System.out.println("Disconnect with Peer.Client " + no);
 			}
 		}
 	}
@@ -86,7 +86,7 @@ public class Server {
 		try{
 			out.writeObject(msg);
 			out.flush();
-			System.out.println("Send message: " + msg + " to Client " + no);
+			System.out.println("Send message: " + msg + " to Peer.Client " + no);
 		}
 		catch(IOException ioException){
 			ioException.printStackTrace();
