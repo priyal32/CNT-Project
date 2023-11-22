@@ -1,4 +1,6 @@
-import jdk.jfr.Unsigned;
+package Messages;
+
+import Peer.Common;
 
 public class Bitfield extends Message{
     public int numPieces;
@@ -52,7 +54,25 @@ public class Bitfield extends Message{
         int s = (int) Math.ceil((double) this.numPieces / 8);
 
         byte[] arr = new byte[s];
-        int tempInt = 0;
+
+        int b = 0;
+        int i = 0;
+
+        for(i = 0; i <  numPieces; i+=8){
+            for(int j = 7; j >= 0; j--){
+                if(i + j >= pieces.length){
+                    arr[b] &= (byte) ~(1 << j);
+                    continue;
+                }
+                if(pieces[i + j].isPresent() == 1){
+                    arr[b] |= (byte) (1 << j);
+                }else{
+                    arr[b] &= (byte) ~(1 << j);
+                }
+            }
+            b++;
+        }
+        /*int tempInt = 0;
         int count = 0;
         int i;
         for (i = 1; i <= this.numPieces; i++)
@@ -76,16 +96,20 @@ public class Bitfield extends Message{
             int tempShift = ((numPieces) - (numPieces / 8) * 8);
             tempInt = tempInt << (8 - tempShift);
             arr[count] = (byte) tempInt;
-        }
+        }*/
         return arr;
-
     }
 
     public void printBytes(byte[] arr){
-        for(byte b : arr){
-            System.out.print(b + " ");
+        for (byte currentByte : arr) {
+            // Iterate through each bit in the byte (8 bits per byte)
+            for (int bitPosition = 0; bitPosition < 8; bitPosition++) {
+                // Extract the bit at the current position
+                int bit = (currentByte >> bitPosition) & 1;
+              //  System.out.print(bit); // Print the bit
+            }
+            //System.out.print(" ");
         }
-        System.out.println();
     }
     public void initializeBitfield(int OwnPeerId, boolean hasFile) {
 

@@ -1,8 +1,7 @@
+package Peer;
+
 import java.net.*;
 import java.io.*;
-import java.nio.*;
-import java.nio.channels.*;
-import java.util.*;
 
 public class Client {
 	Socket requestSocket;           //socket connect to the server
@@ -19,7 +18,7 @@ public class Client {
 			String path = System.getProperty("user.dir");
 
 			//create a socket to connect to the server
-			Runtime.getRuntime().exec("ssh " + " " + " cd " + path + "; java peerProcess " + 1);
+			Runtime.getRuntime().exec("ssh " + " " + " cd " + path + "; java Peer.peerProcess " + 1);
 
 			requestSocket = new Socket("localhost", 8000);
 			System.out.println("Connected to localhost in port 8000");

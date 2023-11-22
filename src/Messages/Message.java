@@ -1,15 +1,26 @@
+package Messages;
+
+import Peer.Common;
+
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.nio.charset.StandardCharsets;
+import java.io.Serializable;
 
-public class Message {
+public class Message implements Serializable {
+    Common commonfile = Common.readCommonFile("Common.cfg");
+    int numOfFiles = commonfile.getFileSize();
+    int pieceSize = commonfile.getPieceSize();
+    int numPieces = (int)Math.ceil((double) numOfFiles / pieceSize);
 
+    public Message(){
+
+    }
     public Message(Type type){
         this (type, null);
     }
 
-    // Message has payload then length is payload + 1 else is 0
+    // Messages. Message has payload then length is payload + 1 else is 0
     public Message(Type type, byte[] payload) {
         if(payload == null){
             length = 0;
@@ -24,7 +35,7 @@ public class Message {
         return type;
     }
 
-    // return Instance of Message Type
+    // return Instance of Messages.Message Messages.Type
     public Message getMessageInstance( Type type) {
         if (type == Type.Choke) {
             return new Choke();
@@ -58,8 +69,11 @@ public class Message {
     }
 
     public void writeMessage(ObjectOutputStream out) throws IOException{
+        // write length of message in 4 bytes = int
         out.writeInt(length);
+        // write type in one byte
         out.writeByte(type.getValue());
+        // write payload
         if(payload != null && payload.length > 0){
             out.write(payload,0,payload.length);
         }

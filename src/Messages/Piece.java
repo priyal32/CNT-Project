@@ -1,3 +1,6 @@
+package Messages;
+import Peer.Common;
+
 import java.nio.ByteBuffer;
 
 public class Piece extends Message {

@@ -1,10 +1,11 @@
-import java.io.File;
-import java.io.FileNotFoundException;
+package Peer;
+
 import java.io.InputStream;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-public class Common {
+public class Common implements Serializable {
     private final int numOfPrefNeighbors;
     private final int unchokingInterval;
     private final int optimisticUnChokingInterval;
