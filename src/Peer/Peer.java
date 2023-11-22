@@ -27,6 +27,7 @@ public  class Peer {
      int port;
 
     public Boolean isInterested = false;
+    public Boolean isUnChoked = false;
     private int downloadRate = 0;
     Boolean hasFile;
     ArrayList<Peer> beforePeers;
@@ -139,5 +140,11 @@ public  class Peer {
     public void run(){
 
     }
+
+    public int getDownloadSpeed() {
+        // TODO uh yeah
+        return 0;
+    }
+
 
 }

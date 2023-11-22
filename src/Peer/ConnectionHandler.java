@@ -138,4 +138,7 @@ public class ConnectionHandler extends Thread {
     public void run() {
         getMessage();
     }
+
+    public void resetPieces() {
+    }
 }
