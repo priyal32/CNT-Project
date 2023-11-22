@@ -52,6 +52,12 @@ public class Piece extends Message {
 
     }
 
+    public Piece(byte[] content, int index){
+        super();
+        this.filePiece = content;
+        this.index = index;
+    }
+
     public Piece decodePiece(byte[] payload){
         if(payload.length < 4){
             return null;

@@ -2,6 +2,7 @@ package Peer;
 
 import Messages.*;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -15,16 +16,19 @@ public class ConnectionHandler extends Thread {
     private final Peer dest;
     private ObjectInputStream in;	//stream read from the socket
     private ObjectOutputStream out;    //stream write to the socket
+    private peerSelector peerSelector;
 
     Log log;
 
-    public ConnectionHandler(Socket connectionSocket, Peer peer, Peer dest, ObjectOutputStream out, ObjectInputStream in, Log log) {
+    public ConnectionHandler(Socket connectionSocket, Peer peer, Peer dest, ObjectOutputStream out, ObjectInputStream in,
+                             Log log, peerSelector peerSelector) {
         this.connectionSocket = connectionSocket;
         this.src = peer;
         this.dest = dest;
         this.in = in;
         this.out = out;
         this.log = log;
+        this.peerSelector = peerSelector;
     }
 
 
@@ -63,6 +67,7 @@ public class ConnectionHandler extends Thread {
 
     public void getMessage(){
         new Thread(()->{
+            boolean isUnchoked = false;
             while (true){
                 try {
                     int available = in.available();
@@ -76,15 +81,23 @@ public class ConnectionHandler extends Thread {
 
                     // TODO: Implement different protocols. Only have bitfield
                     if(type == Type.Unchoke){
-                    }else if(type == Type.Choke){
-
-                    }else if (type == Type.Interested) {
+                        // TODO Logger
+                        isUnchoked = true;
+                        sendRequest(Type.Unchoke);
+                    }
+                    else if(type == Type.Choke){
+                        // TODO LOGGER
+                        isUnchoked = false;
+                    }
+                    else if (type == Type.Interested) {
+                        peerSelector.kNPrefNeighborsPeers.add(dest);
                         log.interestedMessage(dest.getId());
-
-                    }else if (type == Type.NotInterested) {
+                    }
+                    else if (type == Type.NotInterested) {
+                        peerSelector.kNPrefNeighborsPeers.remove(dest);
                         log.notInterestedMessage(dest.getId());
-
-                    }else if (type == Type.Piece) {
+                    }
+                    else if (type == Type.Piece) {
 
                     }else if (type == Type.BitField) {
 
@@ -113,9 +126,15 @@ public class ConnectionHandler extends Thread {
 
 //                        Message msg = new Message(Type.BitField, bitfield);
 //                        sendMessage(msg);
-                    }else if (type == Type.Request) {
-
-                    }else if (type == Type.Have) {
+                    }
+                    else if (type == Type.Request) {
+                        int index = in.readInt();
+                        byte[] content = Manager.get(index).getFilePiece();
+                        int pieceIndex = Manager.get(index).getIndex();
+                        Message sendPiece = new Message(Type.Piece, content, pieceIndex);
+                        sendMessage(sendPiece);
+                    }
+                    else if (type == Type.Have) {
 
                     }
 
@@ -127,7 +146,6 @@ public class ConnectionHandler extends Thread {
         }).start();
     }
 
-
     public void sendRequest(Type type){
         if(type == Type.Unchoke){
             Unchoke unchoke = new Unchoke();
@@ -136,9 +154,11 @@ public class ConnectionHandler extends Thread {
     }
     @Override
     public void run() {
+        peerSelector.start();
         getMessage();
     }
 
     public void resetPieces() {
+        // TODO yeah do it
     }
 }

@@ -8,16 +8,14 @@ import java.net.ServerSocket;
 import java.util.*;
 
 public class peerSelector extends Thread{
-    ServerSocket socket;
     Peer src;
     HashMap<Integer, Peer> peers;
     ArrayList<Peer> interestedPeers = new ArrayList<Peer>();
-    ArrayList<Peer> kNPrefNeighborsPeers;
+    ArrayList<Peer> kNPrefNeighborsPeers = new ArrayList<Peer>();
     Peer optUnchokedPeer;
 
-    public peerSelector(ServerSocket socket, Peer src, HashMap<Integer, Peer> peers)
+    public peerSelector(Peer src, HashMap<Integer, Peer> peers)
     {
-        this.socket = socket;
         this.src = src;
         this.peers = peers;
     }
@@ -92,10 +90,11 @@ public class peerSelector extends Thread{
                 synchronized (interestedPeers)
                 {
                     Random random =  new Random();
-                    int index_of_choked = random.nextInt(interestedPeers.size());
-                    Peer peer;
+                    System.out.println("Interested: " + interestedPeers.size());
                     if(interestedPeers.size() != 0)
                     {
+                        int index_of_choked = random.nextInt(0,interestedPeers.size());
+                        Peer peer;
                         peer = interestedPeers.get(index_of_choked);
                         while(!peer.isUnChoked){
                             index_of_choked = random.nextInt(interestedPeers.size());
@@ -143,6 +142,7 @@ public class peerSelector extends Thread{
     {
         kPreferredNeighbors();
         unchokeOptimistic();
+        System.out.println("ran all");
     }
 
 }

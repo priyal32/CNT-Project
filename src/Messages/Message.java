@@ -12,6 +12,7 @@ public class Message implements Serializable {
     int numOfFiles = commonfile.getFileSize();
     int pieceSize = commonfile.getPieceSize();
     int numPieces = (int)Math.ceil((double) numOfFiles / pieceSize);
+    int pieceIndex = 0;
 
     public Message(){
 
@@ -29,6 +30,17 @@ public class Message implements Serializable {
         }
         this.type = type;
         this.payload = payload;
+    }
+
+    public Message(Type type, byte[] payload, int index) {
+        if(payload == null){
+            length = 0;
+        }else{
+            length = payload.length + 1;
+        }
+        this.type = type;
+        this.payload = payload;
+        this.pieceIndex = index;
     }
 
     public Type getType() {

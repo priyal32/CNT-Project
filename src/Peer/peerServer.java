@@ -57,7 +57,8 @@ public class peerServer  {
 
         Peer connectionFrom = peerProcess.getPeer(handshake.getPeerId());
         log.connectFrom(handshake.getPeerId());
-        ConnectionHandler connectionHandler = new ConnectionHandler(connection, peer, connectionFrom,out,in, log);
+        peerSelector peerSelector = new peerSelector(peer,peerProcess.allPeers);
+        ConnectionHandler connectionHandler = new ConnectionHandler(connection, peer, connectionFrom,out,in, log,peerSelector);
         connectionHandler.start();
         connectionFrom.setConnectionHandler(connectionHandler);
         if(peer.haveFile()){

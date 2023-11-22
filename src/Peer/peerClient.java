@@ -62,7 +62,8 @@ public class peerClient implements Runnable{
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-            ConnectionHandler connectionHandler = new ConnectionHandler(requestSocket,src, dest,out,in, log);
+            peerSelector peerSelector = new peerSelector(src,peerProcess.allPeers);
+            ConnectionHandler connectionHandler = new ConnectionHandler(requestSocket,src, dest,out,in, log,peerSelector);
             connectionHandler.start();
 
             if(src.haveFile()){
