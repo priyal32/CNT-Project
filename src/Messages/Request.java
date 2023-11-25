@@ -1,7 +1,9 @@
 package Messages;
 
 public class Request extends Message{
-    public Request() {
+    int index;
+    public Request(int index) {
         super(Type.Request);
+        this.index = index;
     }
 }

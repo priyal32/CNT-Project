@@ -32,53 +32,34 @@ public class Message implements Serializable {
         this.payload = payload;
     }
 
-    public Message(Type type, byte[] payload, int index) {
-        if(payload == null){
-            length = 0;
-        }else{
-            length = payload.length + 1;
-        }
-        this.type = type;
-        this.payload = payload;
-        this.pieceIndex = index;
-    }
+//    // piece payload
+//    public Message(Type type, byte[] payload, int index) {
+//        if(payload == null){
+//            length = 0;
+//        }else{
+//            length = payload.length + 1;
+//        }
+//        this.type = type;
+//        this.payload = payload;
+//        this.pieceIndex = index;
+//    }
+//
+//    // request payload
+//    public Message(Type type, int index) {
+//        if(payload == null){
+//            length = 0;
+//        }else{
+//            length = payload.length + 1;
+//        }
+//        this.type = type;
+//        this.pieceIndex = index;
+//    }
 
     public Type getType() {
         return type;
     }
 
-    // return Instance of Messages.Message Messages.Type
-    public Message getMessageInstance( Type type) {
-        if (type == Type.Choke) {
-            return new Choke();
-        } else if (type == Type.Unchoke) {
-            return new Unchoke();
-        } else if (type == Type.Interested) {
-            return new Interested();
-        } else if (type == Type.NotInterested) {
-            return new Choke();
-        } else if (type == Type.Have) {
-            return new Choke();
-        } else if (type == Type.BitField) {
-            return new Choke();
-        } else if (type == Type.Request) {
-            return new Choke();
-        } else if (type == Type.Piece) {
-            return new Choke();
-        }
-        return null;
-    }
 
-    public void readMessage(ObjectInputStream in) throws IOException{
-        if(this.type == Type.BitField){
-            if(payload != null && payload.length > 0){
-                System.out.println(in.read(payload, 0, payload.length));
-
-            }
-
-        }
-
-    }
 
     public void writeMessage(ObjectOutputStream out) throws IOException{
         // write length of message in 4 bytes = int
@@ -96,22 +77,11 @@ public class Message implements Serializable {
     public int getLength() {
         return length;
     }
-
-    public void setLength(int length) {
-        this.length = length;
-    }
-
     public void setType(Type type) {
         this.type = type;
     }
 
-    public byte[] getPayload() {
-        return payload;
-    }
 
-    public void setPayload(byte[] payload) {
-        this.payload = payload;
-    }
 
 
 }

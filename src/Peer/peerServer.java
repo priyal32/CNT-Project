@@ -19,10 +19,13 @@ public class peerServer  {
     ObjectOutputStream out;
     Peer peer;
     Log log;
-    public peerServer(Peer peer, ServerSocket listener, Log log){
+
+    peerSelector peerSelector;
+    public peerServer(Peer peer, ServerSocket listener, Log log, peerSelector peerSelector){
         this.peer = peer;
         this.listener = listener;
         this.log = log;
+        this.peerSelector = peerSelector;
     }
 
 
@@ -40,13 +43,15 @@ public class peerServer  {
         in = new ObjectInputStream(connection.getInputStream());
 
         Handshake handshake = new Handshake(peer.getId());
+
+        // read handshake from client
         handshake.readHandShake(in);
 
         if(!Objects.equals(handshake.getPeerHeader(), handshake.HEADER)){
             System.out.println("Error performing handshake");
         }
 
-            // send Handshake back to the client
+        // send Handshake back to the client
         try {
             handshake.sendHandShake(out);
             out.flush();
@@ -57,12 +62,15 @@ public class peerServer  {
 
         Peer connectionFrom = peerProcess.getPeer(handshake.getPeerId());
         log.connectFrom(handshake.getPeerId());
-        peerSelector peerSelector = new peerSelector(peer,peerProcess.allPeers);
+
+        // start the message handling class
         ConnectionHandler connectionHandler = new ConnectionHandler(connection, peer, connectionFrom,out,in, log,peerSelector);
         connectionHandler.start();
+
         connectionFrom.setConnectionHandler(connectionHandler);
+
+        // send bitfield if it has the file
         if(peer.haveFile()){
-            System.out.println("in have file");
             byte[] bitfield = peer.getBitfield().getBytes();
             connectionHandler.sendMessage(new Message(Type.BitField, bitfield));
         }

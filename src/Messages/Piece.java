@@ -58,22 +58,22 @@ public class Piece extends Message {
         this.index = index;
     }
 
-    public Piece decodePiece(byte[] payload){
-        if(payload.length < 4){
-            return null;
-        }
-        // extract first 4 bytes as that is message length
-        byte[] byteIndex = new byte[4];
-        Piece piece = new Piece();
-
-        int value = 0;
-        ByteBuffer buffer = ByteBuffer.wrap(payload, 0, 4);
-        value = buffer.getInt();
-        piece.index = value;
-        piece.filePiece = new byte[payload.length - 4];
-
-        // copy remaining pieces into the actual filepiece
-        System.arraycopy(payload, 4, piece.filePiece, 0, payload.length-4);
-        return piece;
-    }
+//    public Piece decodePiece(byte[] payload){
+//        if(payload.length < 4){
+//            return null;
+//        }
+//        // extract first 4 bytes as that is message length
+//        byte[] byteIndex = new byte[4];
+//        Piece piece = new Piece();
+//
+//        int value = 0;
+//        ByteBuffer buffer = ByteBuffer.wrap(payload, 0, 4);
+//        value = buffer.getInt();
+//        piece.index = value;
+//        piece.filePiece = new byte[payload.length - 4];
+//
+//        // copy remaining pieces into the actual filepiece
+//        System.arraycopy(payload, 4, piece.filePiece, 0, payload.length-4);
+//        return piece;
+//    }
 }

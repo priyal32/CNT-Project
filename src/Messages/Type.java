@@ -21,7 +21,6 @@ public enum Type {
     }
 
     public static Type valueOf (byte b) {
-        System.out.println(b);
         for (Type t : Type.values()) {
             if (t.type == b) {
                 return t;
