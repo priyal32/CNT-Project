@@ -20,10 +20,12 @@ public class peerClient implements Runnable{
     Peer src;
     Peer dest;
     Log log;
-    public peerClient(Peer src, Peer dest, Log log){
+    peerSelector peerSelector;
+    public peerClient(Peer src, Peer dest, Log log, peerSelector peerSelector){
         this.src = src;
         this.dest = dest;
         this.log = log;
+        this.peerSelector =peerSelector;
     }
 
     @Override
@@ -39,14 +41,11 @@ public class peerClient implements Runnable{
             out.flush();
 
 
-            // do some message handling? Handshake? HOW ? :/ I hate this
+            // send handshake to server
 
-            //System.out.println("Sending handshake to " + dest.getHost() + " in "  + dest.getPort());
-            //String msg = "Client to Server Handshake";
             Handshake handshake = new Handshake(src.getId());
 
             try{
-                //stream write the message
                 handshake.sendHandShake(out);
                 log.connectTo(dest.getId());
                 out.flush();
@@ -56,18 +55,21 @@ public class peerClient implements Runnable{
             }
 
             try {
+                // read handshake from the server
                     handshake.readHandShake(in);
                     out.flush();
 
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-            peerSelector peerSelector = new peerSelector(src,peerProcess.allPeers);
+
+            // start the message handling class
             ConnectionHandler connectionHandler = new ConnectionHandler(requestSocket,src, dest,out,in, log,peerSelector);
             connectionHandler.start();
+            dest.setConnectionHandler(connectionHandler);
 
+            // if it has file then send the bitfield to the server
             if(src.haveFile()){
-                System.out.println("in have file");
                 byte[] bitfield = src.getBitfield().getBytes();
                 connectionHandler.sendMessage(new Message(Type.BitField, bitfield));
             }

@@ -23,6 +23,19 @@ public class Bitfield extends Message{
             this.pieces[i] = new Piece();
         }
     }
+
+    public void setPiece(int index){
+        this.pieces[index].setPresent(1);
+    }
+
+    public boolean checkPiecesFilled(){
+        for(Piece piece : this.pieces){
+            if(piece.isPresent() == 0){
+                return false;
+            }
+        }
+        return true;
+    }
     public int getNumPieces() {
         return numPieces;
     }
@@ -72,31 +85,7 @@ public class Bitfield extends Message{
             }
             b++;
         }
-        /*int tempInt = 0;
-        int count = 0;
-        int i;
-        for (i = 1; i <= this.numPieces; i++)
-        {
-            int tempP = this.pieces[i-1].Present;
-            tempInt = (int) (tempInt << 1);
-            if (tempP == 1)
-            {
-                tempInt = tempInt + 1;
-            }
 
-            if (i % 8 == 0) {
-                arr[count] = (byte) tempInt;
-                count++;
-                tempInt = 0;
-            }
-
-        }
-        if ((i-1) % 8 != 0)
-        {
-            int tempShift = ((numPieces) - (numPieces / 8) * 8);
-            tempInt = tempInt << (8 - tempShift);
-            arr[count] = (byte) tempInt;
-        }*/
         return arr;
     }
 

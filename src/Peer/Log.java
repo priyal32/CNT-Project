@@ -41,6 +41,42 @@ public class Log {
         writer.flush();
     }
 
+    public void ChokeMessage(int peerId1){
+        String timeStamp = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss").format(Calendar.getInstance().getTime());
+        writer.println(timeStamp + " Peer " + peerId + " is choked by " + peerId1);
+        writer.flush();
+    }
+
+
+    public void optUnchokeMessage(int peerId1){
+        String timeStamp = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss").format(Calendar.getInstance().getTime());
+        writer.println(timeStamp + " Peer " + peerId + " has the optimistically-unchocked neighbor " + peerId1);
+        writer.flush();
+    }
+    public void UnchokeMessage(int peerId1){
+        String timeStamp = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss").format(Calendar.getInstance().getTime());
+        writer.println(timeStamp + " Peer " + peerId + " is unchoked by " + peerId1);
+        writer.flush();
+    }
+
+    public void HaveMessage(int peerId1, int index){
+        String timeStamp = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss").format(Calendar.getInstance().getTime());
+        writer.println(timeStamp + " Peer " + peerId + " received a 'have' message from " + peerId1  + " for the piece " + index);
+        writer.flush();
+    }
+
+    public void DownloadedPiece(int peerId1, int index, int pieces){
+        String timeStamp = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss").format(Calendar.getInstance().getTime());
+        writer.println(timeStamp + " Peer " + peerId + " has downloaded the piece " + index  + " from " + peerId1 + ".\nNow the number of pieces it has is " + pieces);
+        writer.flush();
+    }
+
+    public void fileDownloaded(){
+        String timeStamp = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss").format(Calendar.getInstance().getTime());
+        writer.println(timeStamp + " Peer " + peerId + " has downloaded the complete file.");
+        writer.flush();
+    }
+
 
 
 
