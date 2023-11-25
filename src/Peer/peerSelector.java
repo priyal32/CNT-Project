@@ -36,7 +36,7 @@ public class peerSelector extends Thread{
             {
                 return r.nextInt(2);
             }
-            return a.getDownloadSpeed() - b.getDownloadSpeed();
+            return (int)(a.getDownloadSpeed() - b.getDownloadSpeed());
         }
     }
 
@@ -53,9 +53,11 @@ public class peerSelector extends Thread{
                         if(!interestedPeers.isEmpty())
                         {
                             kNPrefNeighborsPeers = new ArrayList<Peer>();
-                            if(!src.hasFile)
-                            {
-                                interestedPeers.sort(new sortInterestedPeers());
+
+                            interestedPeers.sort(new sortInterestedPeers());
+
+                            for(int i = 0; i < interestedPeers.size(); i++){
+                                System.out.println(interestedPeers.get(i).id + "Download Rate: " +interestedPeers.get(i).getDownloadSpeed());
                             }
                             Iterator<Peer> itr = interestedPeers.iterator();
                             int i = 0;
@@ -77,6 +79,8 @@ public class peerSelector extends Thread{
                             for (Peer kNPrefNeighborsPeer : kNPrefNeighborsPeers) {
                                 prefPeers.add(kNPrefNeighborsPeer.getId());
                             }
+
+                            log.changeOfPreferredNeighbors(kNPrefNeighborsPeers);
 
                             choke();
                         }

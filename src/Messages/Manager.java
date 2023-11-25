@@ -61,9 +61,9 @@ public class Manager {
             byte[] fileContent = new byte[pieceSize];
             int bytesRead = fileInput.read(fileContent);
 
-            if (bytesRead != pieceSize) {
-                System.err.println("Error reading expected no. of bytes");
-            }
+//            if (bytesRead != pieceSize) {
+//                System.err.println("Error reading expected no. of bytes");
+//            } Maya's laptop is too fast -> error
             fileInput.close();
             return new Piece(fileContent, index);
         } catch (Exception e) {

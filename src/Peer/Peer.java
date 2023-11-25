@@ -28,7 +28,7 @@ public  class Peer {
 
     public Boolean isInterested = false;
     public Boolean isUnChoked = false;
-    private int downloadRate = 0;
+    private double downloadRate = 0;
     Boolean hasFile;
     ArrayList<Peer> beforePeers;
 
@@ -79,7 +79,7 @@ public  class Peer {
 
     public void setRate(int numPieces){
         Common common = Common.readCommonFile("Common.cfg");
-        this.downloadRate  = (int) (numPieces/(double)common.getUnchokingInterval());
+        this.downloadRate  = (numPieces/(double)common.getUnchokingInterval());
     }
 
     public Boolean getIsInterested(){
@@ -89,7 +89,7 @@ public  class Peer {
         this.isInterested = isInterested;
     }
 
-    public int getRate(){
+    public double getRate(){
         return downloadRate;
     }
 
@@ -141,9 +141,9 @@ public  class Peer {
 
     }
 
-    public int getDownloadSpeed() {
+    public double getDownloadSpeed() {
         // TODO uh yeah
-        return 0;
+        return downloadRate;
     }
 
 

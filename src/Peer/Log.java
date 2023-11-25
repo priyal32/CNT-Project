@@ -3,6 +3,7 @@ package Peer;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 
 public class Log {
@@ -76,6 +77,17 @@ public class Log {
         writer.println(timeStamp + " Peer " + peerId + " has downloaded the complete file.");
         writer.flush();
     }
+
+    public void changeOfPreferredNeighbors(ArrayList<Peer> neighbors){
+        String timeStamp = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss").format(Calendar.getInstance().getTime());
+        writer.println(timeStamp + " Peer " + peerId + " has the preferred neighbors.");
+        for(int i = 0; i < neighbors.size(); i++){
+            writer.print(neighbors.get(i).id + " , ");
+        }
+        writer.println();
+        writer.flush();
+    }
+
 
 
 
