@@ -150,9 +150,13 @@ public class ConnectionHandler extends Thread {
 
                             bytesRead += chunckSize;
                         }
+                        int index = Manager.readIntFromStream(data);
+                        if(src.getBitfield().pieces[index].isPresent() == 1){
+                            continue;
+                        }
+
                         Manager.store(data);
 
-                        int index = Manager.readIntFromStream(data);
                         hasPieces++;
                         log.DownloadedPiece(dest.getId(), index, Manager.numAvailable);
                         peerSelector.sendHave(index);

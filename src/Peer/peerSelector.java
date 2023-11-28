@@ -63,14 +63,16 @@ public class peerSelector extends Thread{
                             // if the src peer has complete file then choose peers randomly
                             if(src.hasFile){
                                 Random random = new Random();
-                                while(kNPrefNeighborsPeers.size() != common.getNumOfPrefNeighbors()){
+                                int temp = Math.min(common.getNumOfPrefNeighbors(), interestedPeers.size());
+                                while(kNPrefNeighborsPeers.size() < temp){
                                     int randomIndice = random.nextInt(interestedPeers.size());
-                                    while(indexes.contains(randomIndice)){
-                                        randomIndice = random.nextInt();
+
+                                    if(!kNPrefNeighborsPeers.contains(interestedPeers.get(randomIndice))){
+                                        kNPrefNeighborsPeers.add(interestedPeers.get(randomIndice));
+                                        if(!interestedPeers.get(randomIndice).isUnChoked)
+                                            unchoke(interestedPeers.get(randomIndice));
                                     }
-                                    indexes.add(randomIndice);
-                                    kNPrefNeighborsPeers.add(interestedPeers.get(randomIndice));
-                                    unchoke(interestedPeers.get(randomIndice));
+
                                 }
                             }else{
                                 // sort them by downloading rate
@@ -167,7 +169,7 @@ public class peerSelector extends Thread{
         }).start();
     }
 
-    private void unchoke(Peer peer)
+    private synchronized void unchoke(Peer peer)
     {
         peer.isUnChoked = true;
         Message unchokeMsg = new Message(Type.Unchoke);
@@ -185,17 +187,19 @@ public class peerSelector extends Thread{
             }
         }
     }
-    private void choke()
+    private synchronized void choke()
     {
 
         for (Peer peer:interestedPeers) {
            // log.writer.print("interested peers: " + peer.getId() + ", ");
             // log.writer.println();
             if (!kNPrefNeighborsPeers.contains(peer) && peer != optUnchokedPeer && peer.getConnectionHandler() != null) {
-                peer.isUnChoked = false;
-                Message chokeMsg = new Message(Type.Choke);
+                if(peer.isUnChoked){
+                    peer.isUnChoked = false;
+                    Message chokeMsg = new Message(Type.Choke);
+                    peer.getConnectionHandler().sendMessage(chokeMsg);
+                }
 
-                peer.getConnectionHandler().sendMessage(chokeMsg);
             }
         }
     }

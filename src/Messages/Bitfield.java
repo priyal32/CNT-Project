@@ -15,7 +15,7 @@ public class Bitfield extends Message{
         int numOfFiles = commonfile.getFileSize();
         int pieceSize = commonfile.getPieceSize();
         numPieces = (int)Math.ceil((double) numOfFiles / pieceSize);
-        System.out.println("Numpieces: " + numPieces);
+        //System.out.println("Numpieces: " + numPieces);
         pieces = new Piece[numPieces];
 
         // initialize each piece
@@ -117,40 +117,6 @@ public class Bitfield extends Message{
         return bytes;
 
     }
-//    public byte[] getBytes()
-//    {
-//        int s = this.numPieces / 8;
-//        if (numPieces % 8 != 0)
-//            s = s + 1;
-//        byte[] iP = new byte[s];
-//        int tempInt = 0;
-//        int count = 0;
-//        int Cnt;
-//        for (Cnt = 1; Cnt <= this.numPieces; Cnt++)
-//        {
-//            int tempP = this.pieces[Cnt-1].isPresent();
-//            tempInt = tempInt << 1;
-//            if (tempP == 1)
-//            {
-//                tempInt = tempInt + 1;
-//            } else
-//                tempInt = tempInt + 0;
-//
-//            if (Cnt % 8 == 0 && Cnt!=0) {
-//                iP[count] = (byte) tempInt;
-//                count++;
-//                tempInt = 0;
-//            }
-//
-//        }
-//        if ((Cnt-1) % 8 != 0)
-//        {
-//            int tempShift = ((numPieces) - (numPieces / 8) * 8);
-//            tempInt = tempInt << (8 - tempShift);
-//            iP[count] = (byte) tempInt;
-//        }
-//        return iP;
-//    }
 
     public void printBytes(byte[] arr){
         for (byte currentByte : arr) {
