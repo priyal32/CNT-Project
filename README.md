@@ -2,6 +2,6 @@
 Team Members: Priyal Patel, Brianna Rodriguez, Maya Singh
 
 To compile <br>
-`javac peerProcess.java` <br>
+`javac Peer.peerProcess.java` <br>
 To run <br>
-`java peerProcess <peer id>`
+`java Peer.peerProcess <peer id>`

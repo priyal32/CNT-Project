@@ -1,0 +1,2 @@
+pleaseWork:
+	javac Messages/Bitfield.java Messages/Choke.java Messages/Handshake.java Messages/Have.java Messages/Interested.java Messages/Manager.java Messages/Message.java Messages/NotInterested.java Messages/Piece.java Messages/Request.java Messages/Type.java Messages/Unchoke.java Peer/Common.java Peer/Log.java Peer/Peer.java Peer/ConnectionHandler.java Peer/peerClient.java Peer/peerProcess.java Peer/peerSelector.java Peer/peerServer.java Peer/PeerStarter.java

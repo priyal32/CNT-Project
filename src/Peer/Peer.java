@@ -4,7 +4,6 @@ import Messages.Bitfield;
 
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Scanner;
 
 import static Peer.peerProcess.allPeers;
@@ -25,12 +24,14 @@ public  class Peer {
 
      String host;
      int port;
+     int numPieces =0;
 
     public Boolean isInterested = false;
     public Boolean isUnChoked = false;
     private double downloadRate = 0;
     Boolean hasFile;
     ArrayList<Peer> beforePeers;
+    Common common = Common.readCommonFile("Common.cfg");
 
     public ConnectionHandler getConnectionHandler() {
         return connectionHandler;
@@ -78,20 +79,12 @@ public  class Peer {
     public Boolean haveFile() { return hasFile; }
 
     public void setRate(int numPieces){
-        Common common = Common.readCommonFile("Common.cfg");
+
         this.downloadRate  = (numPieces/(double)common.getUnchokingInterval());
+        this.numPieces = numPieces;
     }
 
-    public Boolean getIsInterested(){
-        return isInterested;
-    }
-    public void setRate(Boolean isInterested){
-        this.isInterested = isInterested;
-    }
 
-    public double getRate(){
-        return downloadRate;
-    }
 
     public void readPeerFile(String filename) {
         ClassLoader classLoader = peerProcess.class.getClassLoader();

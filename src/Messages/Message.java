@@ -70,6 +70,7 @@ public class Message implements Serializable {
         if(payload != null && payload.length > 0){
             out.write(payload,0,payload.length);
         }
+        out.flush();
     }
     int length;
     Type type;

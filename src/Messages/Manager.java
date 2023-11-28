@@ -4,10 +4,7 @@ import Peer.Common;
 import Peer.Peer;
 
 import java.io.*;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Random;
+import java.util.*;
 
 public class Manager {
     static HashSet<Integer> reqPiece = new HashSet<>();
@@ -19,10 +16,11 @@ public class Manager {
     public static String fileName = common.getFileName();
     public static int fileSize = common.getFileSize();
     public static File file = null;
+    static int numPieces = (int) Math.ceil(common.getFileSize() / (double) common.getPieceSize());
 
     static Peer src;
 
-    public Manager(Peer src, boolean hasFile) {
+    public Manager(Peer src) {
         directory = "peer_" + src.getId() + "/";
         Manager.src = src;
 
@@ -115,16 +113,22 @@ public class Manager {
 //        return booleans;
 //    }
     public static int requestFilePiece(Peer src, Peer dest) {
-        int numPieces = (int) Math.ceil(common.getFileSize() / (double) common.getPieceSize());
 
         if (src.getBitfield().checkPiecesFilled()) {
             return -1;
         }
-        Random random = new Random();
-        int pieceToRequest = random.nextInt(numPieces);
-        while (reqPiece.contains(pieceToRequest) || src.getBitfield().getPieces()[pieceToRequest].isPresent() == 1) {
-            pieceToRequest = random.nextInt(numPieces);
+        List<Integer> availablePieces = new ArrayList<>();
+        for(int i = 0; i < numPieces; i++){
+            if (src.getBitfield().getPieces()[i].isPresent() == 0 && dest.getBitfield().getPieces()[i].isPresent() == 1) {
+                availablePieces.add(i);
+            }
         }
+        if(availablePieces.isEmpty()){
+            return -1;
+        }
+        Random random = new Random();
+        int Index = random.nextInt(availablePieces.size());
+        int pieceToRequest = availablePieces.get(Index);
         reqPiece.add(pieceToRequest);
         return pieceToRequest;
     }

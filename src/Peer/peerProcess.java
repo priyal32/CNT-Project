@@ -1,5 +1,7 @@
 package Peer;
 
+import Messages.Bitfield;
+
 import java.io.*;
 
 import java.util.HashMap;
@@ -7,6 +9,8 @@ import java.util.Map;
 
 public class peerProcess {
     public static  HashMap<Integer, Peer> allPeers = new HashMap<Integer, Peer>();
+    public static  HashMap<Peer, Bitfield> PeersBitfield = new HashMap<Peer, Bitfield>();
+
     public static Peer getPeer(int id){
         return allPeers.get(id);
     }
@@ -35,17 +39,9 @@ public class peerProcess {
                 // initialize server on the peer port of the peer id that was passed in
             }
         }
+
         assert currPeer != null;
-        //System.out.println(currPeer.getId());
 
-        // start server thread for the peer that's been inputted
-
-
-        // establish connections to all previous peers (client -> server) i.e make client threads to those peers and start them
-//        for(Peer b : currPeer.getBeforePeers()) {
-//            System.out.println(b.getId());
-//        }
-        currPeer.getBitfield().printBytes(currPeer.getBitfield().getBytes());
         PeerStarter process = new PeerStarter(currPeer.getId(), currPeer.getHost(), currPeer.getPort(),currPeer.hasFile,currPeer.getBeforePeers());
         process.initialize(process);
     }

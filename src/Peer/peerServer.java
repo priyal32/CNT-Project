@@ -6,9 +6,6 @@ import Messages.Type;
 
 import java.net.*;
 import java.io.*;
-import java.nio.*;
-import java.nio.channels.*;
-import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 public class peerServer  {
@@ -28,18 +25,11 @@ public class peerServer  {
         this.peerSelector = peerSelector;
     }
 
-
-    public void startServer() throws IOException {
-        listener = new ServerSocket(peer.getPort());
-        //System.out.println("The server is running on port " + peer.getPort() + " and host " + peer.getHost());
-
-
-    }
-
-    public void acceptClient() throws IOException {
+    public synchronized void acceptClient() throws IOException {
         connection = listener.accept();
         out = new ObjectOutputStream(connection.getOutputStream());
         out.flush();
+
         in = new ObjectInputStream(connection.getInputStream());
 
         Handshake handshake = new Handshake(peer.getId());
@@ -69,13 +59,16 @@ public class peerServer  {
 
         connectionFrom.setConnectionHandler(connectionHandler);
 
-        // send bitfield if it has the file
-        if(peer.haveFile()){
+        // send bitfield if it has any file pieces
+        if(peer.getBitfield().totalPresentPieces > 0 || peer.haveFile()){
             byte[] bitfield = peer.getBitfield().getBytes();
+            //peer.getBitfield().printBytes(bitfield);
+           // System.out.println("bitfield byte length " + bitfield.length);
             connectionHandler.sendMessage(new Message(Type.BitField, bitfield));
+            //log.writer.println("Sent bitfield message from " + this.peer.getId() + " to " + handshake.getPeerId());
+
         }
 
-        System.out.println("Sent bitfield message from " + this.peer.getId() + " to " + handshake.getPeerId());
 
 
     }

@@ -5,13 +5,17 @@ import Peer.Common;
 public class Bitfield extends Message{
     public int numPieces;
     public Piece[] pieces;
+
+    public int totalPresentPieces = 0;
+    Common commonfile = Common.readCommonFile("Common.cfg");
+
     public Bitfield()
     {
         super(Type.BitField);
-        Common commonfile = Common.readCommonFile("Common.cfg");
         int numOfFiles = commonfile.getFileSize();
         int pieceSize = commonfile.getPieceSize();
         numPieces = (int)Math.ceil((double) numOfFiles / pieceSize);
+        System.out.println("Numpieces: " + numPieces);
         pieces = new Piece[numPieces];
 
         // initialize each piece
@@ -20,16 +24,18 @@ public class Bitfield extends Message{
 
     public void initializePieces(int numPieces){
         for(int i = 0; i < numPieces; i++){
-            this.pieces[i] = new Piece();
+            pieces[i] = new Piece();
         }
     }
 
     public void setPiece(int index){
-        this.pieces[index].setPresent(1);
+
+        pieces[index].setPresent(1);
+        totalPresentPieces++;
     }
 
     public boolean checkPiecesFilled(){
-        for(Piece piece : this.pieces){
+        for(Piece piece : pieces){
             if(piece.isPresent() == 0){
                 return false;
             }
@@ -58,36 +64,93 @@ public class Bitfield extends Message{
         }
         System.out.println();
     }
-    public byte[] encode()
-    {
-        return this.getBytes();
+
+
+    public static Bitfield decode(byte[] b){
+        Bitfield bitfield = new Bitfield();
+        for(int i = 0; i < bitfield.numPieces; i++){
+            int index = i/8;
+            int bitIndex = 7 - (i % 8);
+
+            if(index < b.length){
+                int bit = (b[index] >>  bitIndex) & 1;
+                bitfield.pieces[i].setPresent(bit);
+
+            }
+        }
+        return bitfield;
     }
+
 
     public byte[] getBytes(){
-        int s = (int) Math.ceil((double) this.numPieces / 8);
+        int size = this.numPieces/8;
+        if(numPieces % 8 != 0){
+            size = size + 1;
+        }
+        byte[] bytes = new byte[size];
+        int temp = 0;
+        int count = 0;
+        int n;
 
-        byte[] arr = new byte[s];
-
-        int b = 0;
-        int i = 0;
-
-        for(i = 0; i <  numPieces; i+=8){
-            for(int j = 7; j >= 0; j--){
-                if(i + j >= pieces.length){
-                    arr[b] &= (byte) ~(1 << j);
-                    continue;
-                }
-                if(pieces[i + j].isPresent() == 1){
-                    arr[b] |= (byte) (1 << j);
-                }else{
-                    arr[b] &= (byte) ~(1 << j);
-                }
+        for(n = 1; n <= this.numPieces; n++){
+            int p = this.pieces[n - 1].isPresent();
+            temp = temp << 1;
+            if(p == 1){
+                temp = temp + 1;
+            }else{
+                temp = temp + 0;
             }
-            b++;
+
+            if(n!= 0 && n % 8 == 0){
+                bytes[count] = (byte)temp;
+                count++;
+                temp = 0;
+            }
         }
 
-        return arr;
+        if((n-1) % 8 != 0){
+            int shift = (numPieces - (numPieces /8 ) * 8);
+            temp = temp << (8 - shift);
+            bytes[count] = (byte)temp;
+        }
+
+        return bytes;
+
     }
+//    public byte[] getBytes()
+//    {
+//        int s = this.numPieces / 8;
+//        if (numPieces % 8 != 0)
+//            s = s + 1;
+//        byte[] iP = new byte[s];
+//        int tempInt = 0;
+//        int count = 0;
+//        int Cnt;
+//        for (Cnt = 1; Cnt <= this.numPieces; Cnt++)
+//        {
+//            int tempP = this.pieces[Cnt-1].isPresent();
+//            tempInt = tempInt << 1;
+//            if (tempP == 1)
+//            {
+//                tempInt = tempInt + 1;
+//            } else
+//                tempInt = tempInt + 0;
+//
+//            if (Cnt % 8 == 0 && Cnt!=0) {
+//                iP[count] = (byte) tempInt;
+//                count++;
+//                tempInt = 0;
+//            }
+//
+//        }
+//        if ((Cnt-1) % 8 != 0)
+//        {
+//            int tempShift = ((numPieces) - (numPieces / 8) * 8);
+//            tempInt = tempInt << (8 - tempShift);
+//            iP[count] = (byte) tempInt;
+//        }
+//        return iP;
+//    }
 
     public void printBytes(byte[] arr){
         for (byte currentByte : arr) {
@@ -95,9 +158,9 @@ public class Bitfield extends Message{
             for (int bitPosition = 0; bitPosition < 8; bitPosition++) {
                 // Extract the bit at the current position
                 int bit = (currentByte >> bitPosition) & 1;
-              //  System.out.print(bit); // Print the bit
+                System.out.print(bit); // Print the bit
             }
-            //System.out.print(" ");
+            System.out.print(" ");
         }
     }
     public void initializeBitfield(int OwnPeerId, boolean hasFile) {
