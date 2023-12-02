@@ -73,12 +73,10 @@ public class PeerStarter extends Peer implements Runnable{
                         }
                     }
                     for(Thread th : peerProcess.threads){
-                        System.out.println(th.getId());
-                        System.out.println(th.getName());
                         th.interrupt();
                     }
                     try {
-                        System.out.println("closing server socket");
+                        System.out.println("Closing Server Socket");
                         listener.close();
                         System.exit(0);
                     } catch (IOException e) {

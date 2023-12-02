@@ -104,9 +104,7 @@ public class ConnectionHandler extends Thread {
                     int length = readIntFromStream();
                     if(length < 0)
                         continue;
-                    System.out.println(length);
                     Type type = Type.valueOf(in.readByte());
-                    System.out.println(type.name());
 
                     // if gotten unchoken message then the peer can request a piece if its interested (send piece message or send not interested message)
                     if(type == Type.Unchoke){
@@ -155,10 +153,12 @@ public class ConnectionHandler extends Thread {
                         Manager.store(data);
 
                         hasPieces++;
+                        System.out.println("Has " + hasPieces + " now.");
                         log.DownloadedPiece(dest.getId(), index, Manager.numAvailable);
                         peerSelector.sendHave(index);
 
                         if(src.getBitfield().checkPiecesFilled()){
+                            System.out.println("File has been downloaded.");
                             log.fileDownloaded();
                         }
 
@@ -200,11 +200,8 @@ public class ConnectionHandler extends Thread {
                         if(dest.isUnChoked){
                             int index = in.readInt();
                             int pieceIndex = Objects.requireNonNull(Manager.get(index)).getIndex();
-                            System.out.println("piece index requested: " + pieceIndex);
                             byte[] pIndex = ByteBuffer.allocate(4).putInt(pieceIndex).array();
-
                             byte[] content = Objects.requireNonNull(Manager.get(index)).getFilePiece();
-                            System.out.println("piece size " + content.length);
                             byte[] payload = concat(pIndex, content);
 
                             Message sendPiece = new Message(Type.Piece, payload);

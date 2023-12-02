@@ -46,8 +46,6 @@ public class Manager {
     }
 
     public static Piece get(int index) {
-        System.out.println("in get piece function");
-
         try {
             FileInputStream fileInput = new FileInputStream(file);
             int pieceLocation = common.getPieceSize() * index;
@@ -63,8 +61,6 @@ public class Manager {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-
-
     }
 
     public static int readIntFromStream(byte[] bytes) throws IOException {
@@ -75,8 +71,6 @@ public class Manager {
     }
 
     public static void store(byte[] payload) throws Exception {
-
-        System.out.println("in store function");
         int index = readIntFromStream(payload);
 
         byte[] content = new byte[payload.length - 4];

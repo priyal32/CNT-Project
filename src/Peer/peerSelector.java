@@ -77,10 +77,6 @@ public class peerSelector extends Thread{
                             }else{
                                 // sort them by downloading rate
                                 interestedPeers.sort(new sortInterestedPeers());
-
-                                for(int i = 0; i < interestedPeers.size(); i++){
-                                    System.out.println(interestedPeers.get(i).id + "Download Rate: " +interestedPeers.get(i).getDownloadSpeed());
-                                }
                                 Iterator<Peer> itr = interestedPeers.iterator();
                                 int i = 0;
                                 while(i < common.getNumOfPrefNeighbors() && itr.hasNext())
@@ -99,9 +95,7 @@ public class peerSelector extends Thread{
                             for (Peer kNPrefNeighborsPeer : kNPrefNeighborsPeers) {
                                 prefPeers.add(kNPrefNeighborsPeer.getId());
                             }
-
                             log.changeOfPreferredNeighbors(kNPrefNeighborsPeers);
-
                             choke();
                         }
                     }
@@ -131,7 +125,6 @@ public class peerSelector extends Thread{
                     {
 
                         Random random =  new Random();
-                        System.out.println("Interested: " + interestedPeers.size());
                         if(!interestedPeers.isEmpty())
                         {
                             ArrayList<Peer> chokedPeers = new ArrayList<>();

@@ -26,10 +26,6 @@ public class peerServer  {
     }
 
     public synchronized void acceptClient() throws IOException {
-
-        System.out.println("in here");
-
-
         connection = listener.accept();
         peerProcess.clientConnections.add(connection);
         out = new ObjectOutputStream(connection.getOutputStream());
@@ -56,6 +52,7 @@ public class peerServer  {
         }
 
         Peer connectionFrom = peerProcess.getPeer(handshake.getPeerId());
+        System.out.println("Handshake Established: " + handshake.getPeerId());
         log.connectFrom(handshake.getPeerId());
 
         // start the message handling class
