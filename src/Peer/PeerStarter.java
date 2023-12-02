@@ -118,8 +118,6 @@ public class PeerStarter extends Peer implements Runnable{
         t = new Thread(process);
         t.setName("peerStarter thread");
         t.start();
-
-
     }
 
     @Override
@@ -138,6 +136,7 @@ public class PeerStarter extends Peer implements Runnable{
         }
         // start server thread (will also start the message handling thread)
         serverThread();
+        System.out.println("Thread Created");
         // start the choking/unchoking of the peers
         peerSelector.start();
         terminateProgram();

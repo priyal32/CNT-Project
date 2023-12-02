@@ -153,7 +153,7 @@ public class ConnectionHandler extends Thread {
                         Manager.store(data);
 
                         hasPieces++;
-                        System.out.println("Has " + hasPieces + " now.");
+                        System.out.println("Has " + hasPieces + " pieces downloaded.");
                         log.DownloadedPiece(dest.getId(), index, Manager.numAvailable);
                         peerSelector.sendHave(index);
 
@@ -238,15 +238,18 @@ public class ConnectionHandler extends Thread {
     public void sendRequest(Type type){
         int pieces = dest.numPieces + 1;
         dest.setRate(pieces);
-        if(type == Type.Unchoke){
+        if(type == Type.Unchoke)
+        {
             int index = Manager.requestFilePiece(src, dest);
-            if(index == -1){
+            if(index == -1)
+            {
                 sendMessage(new Message(Type.NotInterested));
-            }else{
+            }
+            else
+            {
                 byte[] payload = ByteBuffer.allocate(4).putInt(index).array();
                 Message msg = new Message(Type.Request, payload);
                 sendMessage(msg);
-
             }
         }
     }
