@@ -87,13 +87,4 @@ public class Log {
         writer.println();
         writer.flush();
     }
-
-
-
-
-
-
-
-
-
 }

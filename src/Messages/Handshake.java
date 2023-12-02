@@ -20,22 +20,16 @@ public class Handshake {
     public void setPeerHeader(String peerHeader) {
         this.peerHeader = peerHeader;
     }
-
     String peerHeader;
     public final byte ZEROES = 10;
     public final byte PEERID = 4;
-
     public int getPeerId() {
         return peerId;
     }
-
     public void setPeerId(int peerId) {
         this.peerId = peerId;
     }
-
     public int peerId;
-
-
     public Handshake(int id) {
         this.id = id;
     }
@@ -73,7 +67,6 @@ public class Handshake {
         setPeerHeader(msg);
         // should give 10 as there are 10-byte zero bits
         int zeroBytesRead = in.read(zeroBytes);
-
         int peerIDBytes = in.read(peerID);
         peerId = 0;
         for (byte b : peerID) {

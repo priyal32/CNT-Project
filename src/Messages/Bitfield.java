@@ -42,30 +42,9 @@ public class Bitfield extends Message{
         }
         return true;
     }
-    public int getNumPieces() {
-        return numPieces;
-    }
-
-    public void setNumPieces(int numPieces) {
-        this.numPieces = numPieces;
-    }
-
     public Piece[] getPieces() {
         return pieces;
     }
-
-    public void setPieces(Piece[] pieces) {
-        this.pieces = pieces;
-    }
-
-    public void printPieces(Piece[] pieces){
-        for(Piece p : pieces){
-            System.out.print(p.Present + " ");
-        }
-        System.out.println();
-    }
-
-
     public static Bitfield decode(byte[] b){
         Bitfield bitfield = new Bitfield();
         for(int i = 0; i < bitfield.numPieces; i++){
@@ -118,17 +97,6 @@ public class Bitfield extends Message{
 
     }
 
-    public void printBytes(byte[] arr){
-        for (byte currentByte : arr) {
-            // Iterate through each bit in the byte (8 bits per byte)
-            for (int bitPosition = 0; bitPosition < 8; bitPosition++) {
-                // Extract the bit at the current position
-                int bit = (currentByte >> bitPosition) & 1;
-                System.out.print(bit); // Print the bit
-            }
-            System.out.print(" ");
-        }
-    }
     public void initializeBitfield(int OwnPeerId, boolean hasFile) {
 
         if (!hasFile) {

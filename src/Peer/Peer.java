@@ -7,21 +7,17 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 import static Peer.peerProcess.allPeers;
+import static Peer.peerProcess.peersDone;
 
 public  class Peer {
-
      int id;
-
     public boolean isUp() {
         return up;
     }
-
     public void setUp(boolean up) {
         this.up = up;
     }
-
     boolean up = false;
-
      String host;
      int port;
      int numPieces =0;
@@ -42,7 +38,6 @@ public  class Peer {
     }
 
     ConnectionHandler connectionHandler;
-
 
     public Bitfield getBitfield() {
         return bitfield;
@@ -69,7 +64,6 @@ public  class Peer {
         return beforePeers;
     }
 
-
     public int getId() { return id; }
 
     public String getHost() { return host; }
@@ -83,9 +77,6 @@ public  class Peer {
         this.downloadRate  = (numPieces/(double)common.getUnchokingInterval());
         this.numPieces = numPieces;
     }
-
-
-
     public void readPeerFile(String filename) {
         ClassLoader classLoader = peerProcess.class.getClassLoader();
 
@@ -121,21 +112,12 @@ public  class Peer {
             Bitfield bitfield1 = new Bitfield();
             bitfield1.initializeBitfield(peer.getId() ,peer.haveFile());
             peer.setBitfield(bitfield1);
-            //peer.getBitfield().printPieces(peer.getBitfield().getPieces());
-           //System.out.println(peer.getId());
-
-           //  peer.getBitfield().printBytes(peer.getBitfield().getBytes());
-           // System.out.println("next");
             beforePeers.add(peer);
             allPeers.put(peer.getId(), peer);
+            peersDone.add(peer);
         }
     }
-    public void run(){
-
-    }
-
     public double getDownloadSpeed() {
-        // TODO uh yeah
         return downloadRate;
     }
 

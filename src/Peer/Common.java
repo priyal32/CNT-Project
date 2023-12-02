@@ -46,31 +46,25 @@ public class Common implements Serializable {
                 Integer.parseInt(fileContents.get(2)), fileContents.get(3), Integer.parseInt(fileContents.get(4)),
                 Integer.parseInt(fileContents.get(5)));
     }
-
     public int getNumOfPrefNeighbors()
     {
         return numOfPrefNeighbors;
     }
-
     public int getUnchokingInterval(){
         return unchokingInterval;
     }
-
     public int getOptimisticUnChokingInterval()
     {
         return optimisticUnChokingInterval;
     }
-
     public int getFileSize()
     {
         return fileSize;
     }
-
     public int getPieceSize()
     {
         return pieceSize;
     }
-
     public String getFileName()
     {
         return fileName;

@@ -66,7 +66,11 @@ public class ConnectionHandler extends Thread {
 
     public int readIntFromStream() throws IOException {
         byte[] bytes = new byte[4];
-        int b = in.read(bytes);
+        int b;
+        if(in != null && !connectionSocket.isClosed())
+            b = in.read(bytes);
+        else
+            return  -1;
         if(b == 4){
             return ((bytes[0] & 0xFF) << 24 | ((bytes[1] & 0xFF) << 16) | ((bytes[2] & 0xFF) << 8) | (bytes[3] & 0XFF));
         }
@@ -86,11 +90,14 @@ public class ConnectionHandler extends Thread {
 
     // get messages from other peers and send messages based on them
     public synchronized void getMessage(){
-        new Thread(()->{
+
+        Thread getMsg = new Thread(()->{
             boolean isUnchoked = false;
 
-            while (true){
+            while (!PeerStarter.shouldStopThreads){
+
                 try {
+
                     int available = in.available();
                     if(available < 0)
                         continue;
@@ -103,31 +110,23 @@ public class ConnectionHandler extends Thread {
 
                     // if gotten unchoken message then the peer can request a piece if its interested (send piece message or send not interested message)
                     if(type == Type.Unchoke){
-                        System.out.println("In unchoke switch statement");
-
                         isUnchoked = true;
                         log.UnchokeMessage(dest.getId());
                         sendRequest(Type.Unchoke);
                     }
                     // if choked then do nothing
                     else if(type == Type.Choke){
-                        System.out.println("In choke switch statement");
-
                         log.ChokeMessage(dest.getId());
                         isUnchoked = false;
                     }
                     // if gotten interested message then add that peer to this peer's interested peers
                     else if (type == Type.Interested) {
-                        System.out.println("In INTERESTED switch statement");
-
                         if(!peerSelector.interestedPeers.contains(dest))
                             peerSelector.interestedPeers.add(dest);
-                        System.out.println("Interested Peers: " + peerSelector.interestedPeers.size());
                         log.interestedMessage(dest.getId());
                     }
                     // if gotten not interested message then remove that from this peers interested peers (if it was there)
                     else if (type == Type.NotInterested) {
-                        System.out.println("In not interested statement");
                         peerSelector.interestedPeers.remove(dest);
                         log.notInterestedMessage(dest.getId());
                     }
@@ -137,8 +136,6 @@ public class ConnectionHandler extends Thread {
 
                     else if (type == Type.Piece) {
                         int contentLen = length - 1;
-                        System.out.println("In Piece switch statement");
-
                         byte[] data = new byte[contentLen];
                         int bytesRead = 0;
 
@@ -172,7 +169,6 @@ public class ConnectionHandler extends Thread {
 
 
                     }else if (type == Type.BitField) {
-                        System.out.println("In bitfield switch statement");
                         int contentLen = length - 1;
 
                         byte[] data = new byte[contentLen];
@@ -189,32 +185,19 @@ public class ConnectionHandler extends Thread {
                         byte[] srcBitfield = src.getBitfield().getBytes();
                         Bitfield destBitfield = Bitfield.decode(data);
                         dest.setBitfield(destBitfield);
-//                        log.writer.println(dest.getId() + " " + "bitfield received");
-//                        for(int i = 0; i < dest.getBitfield().numPieces; i++){
-//                            if(dest.getBitfield().getPieces()[i].isPresent() == 1){
-//                                System.out.println("Piece " +i + " is there");
-//                            }else {
-//                                log.writer.println("Piece " + i + " is not there");
-//                            }
-//                        }
 
                         if(compareBitfields(srcBitfield, dest.getBitfield().getBytes())){
                             Message msg = new Message(Type.Interested,null);
-                            System.out.println("in interested if loop");
                             sendMessage(msg);
                         }else{
                             Message msg = new Message(Type.NotInterested,null);
-                            System.out.println("in not interested if loop");
                             sendMessage(msg);
                         }
 
                     }
-
                     // if gotten request message  then send the piece  the other peer is requesting to that peer
                     else if (type == Type.Request) {
                         if(dest.isUnChoked){
-                            System.out.println("In request switch statement");
-
                             int index = in.readInt();
                             int pieceIndex = Objects.requireNonNull(Manager.get(index)).getIndex();
                             System.out.println("piece index requested: " + pieceIndex);
@@ -232,38 +215,34 @@ public class ConnectionHandler extends Thread {
 
                     // if gotten have message then we need to update its bitfield and check again if it now has interesting pieces
                     else if (type == Type.Have) {
-                        System.out.println("in have");
                         int index = in.readInt();
                         dest.getBitfield().setPiece(index);
 
                         //byte[] pIndex = ByteBuffer.allocate(4).putInt(index).array();
                         log.HaveMessage(dest.getId(), index);
                         if(src.getBitfield().pieces[index].isPresent() == 0){
-                            System.out.println("SHOULD BE INTERESTED");
                             Message message = new Message(Type.Interested, null);
                             sendMessage(message);
                         }
                     }
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
                 } catch (Exception e) {
-                    throw new RuntimeException(e);
+                    System.out.println("Terminating peer messaging!");
+                    Thread.currentThread().interrupt();
+                    break;
                 }
 
             }
-        }).start();
+        });
+        getMsg.start();
+        getMsg.setName("Connection Handler Thread");
+        peerProcess.threads.add(getMsg);
     }
 
     public void sendRequest(Type type){
         int pieces = dest.numPieces + 1;
         dest.setRate(pieces);
-
-        System.out.println("In send request function statement");
-
         if(type == Type.Unchoke){
             int index = Manager.requestFilePiece(src, dest);
-            System.out.println("Requesting piece of index " + index);
-
             if(index == -1){
                 sendMessage(new Message(Type.NotInterested));
             }else{
@@ -281,8 +260,4 @@ public class ConnectionHandler extends Thread {
         dest.setRate(0);
     }
 
-    public void resetPieces() {
-        hasPieces = 0;
-        // TODO yeah do it
-    }
 }

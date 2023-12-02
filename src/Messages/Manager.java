@@ -58,10 +58,6 @@ public class Manager {
             }
             byte[] fileContent = new byte[pieceSize];
             int bytesRead = fileInput.read(fileContent);
-
-//            if (bytesRead != pieceSize) {
-//                System.err.println("Error reading expected no. of bytes");
-//            } Maya's laptop is too fast -> error
             fileInput.close();
             return new Piece(fileContent, index);
         } catch (Exception e) {
@@ -103,15 +99,6 @@ public class Manager {
 
     }
 
-
-    //    public static boolean[] convertByteToBoolean(byte val){
-//        boolean[] booleans = new boolean[8];
-//        for(int i = 0; i < 8; i++){
-//            booleans[7 -i] = (val & 1) == 1 ? true : false;
-//            val = (byte) (val >> 1);
-//        }
-//        return booleans;
-//    }
     public static int requestFilePiece(Peer src, Peer dest) {
 
         if (src.getBitfield().checkPiecesFilled()) {
@@ -133,49 +120,3 @@ public class Manager {
         return pieceToRequest;
     }
 }
-
-    //        byte[] interested = new byte[size];
-//        boolean[] isInteresting = new boolean[numPieces];
-//        int maxLength = numPieces;
-//        int size = (int) Math.ceil(numPieces / (double) 8);
-//        if (size > 1)
-//            maxLength = numPieces % 8;
-//
-//
-//        byte[] srcBitfield = src.getBitfield().getBytes();
-//        byte[] destBitfield = dest.getBitfield().getBytes();
-
-//
-//        int s = 0;
-//        int e = 0;
-//        int  j = 0;
-//        for(int i = 0; i < srcBitfield.length; i++) {
-//            interested[i] = (byte) ((srcBitfield[i] ^ destBitfield[i]) & destBitfield[i]);
-//            if (i == size - 1) {
-//                s = 8 - maxLength;
-//                e = maxLength;
-//            } else {
-//                s = 0;
-//                e = 8;
-//            }
-//            boolean[] booleans = Manager.convertByteToBoolean(interested[i]);
-//            System.arraycopy(booleans, s, isInteresting, j, e);
-//            if (j + 8 < numPieces) {
-//                j = j + 8;
-//            } else {
-//                j = numPieces - maxLength;
-//            }
-//
-//            for (int m = 0; m < numPieces; m++) {
-//                if (isInteresting[m] && !requestedPiece.containsKey(m)) {
-//                    requestedPiece.put(m, m);
-//                    return m;
-//                }
-//                m++;
-//            }
-//        }
-//        //return  -1;
-//
-//    }
-
-

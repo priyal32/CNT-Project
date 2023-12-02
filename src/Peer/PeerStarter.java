@@ -4,13 +4,18 @@ package Peer;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.ServerSocket;
+import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Map;
 
 import static Peer.peerProcess.allPeers;
+import static Peer.peerProcess.peersDone;
 
 public class PeerStarter extends Peer implements Runnable{
-    ServerSocket listener;
+    volatile ServerSocket listener;
+    Thread t;
+    Thread serverThread;
+    public static volatile boolean shouldStopThreads = false;
     Log log;
     Peer peer;
     peerSelector peerSelector;
@@ -20,7 +25,6 @@ public class PeerStarter extends Peer implements Runnable{
         try {
             log = new Log(id);
             peer = allPeers.get(id);
-            peerSelector = new peerSelector(peer, allPeers,log);
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         }
@@ -31,6 +35,8 @@ public class PeerStarter extends Peer implements Runnable{
                 for(Peer p : peer.getBeforePeers()) {
                     peerClient pc = new peerClient(peer, p, log, peerSelector);
                     Thread pcThread = new Thread(pc);
+                    pcThread.setName("client thread");
+                    peerProcess.threads.add(pcThread);
                     pcThread.start();
                 }
 
@@ -40,29 +46,47 @@ public class PeerStarter extends Peer implements Runnable{
     // if every peer is done downloading close sockets
     // TODO: handle this better. Don't think you can just close sockets, gives error
     // TODO: look at PeerSelector class - may be the issue
-    public void terminateProgram(){
+    public synchronized void terminateProgram(){
         new Thread(() -> {
             while(true){
-                boolean allPeersDoneDownloading = true;
-                for(Map.Entry<Integer, Peer> set : allPeers.entrySet()){
-                    if(!set.getValue().getBitfield().checkPiecesFilled()){
-                        allPeersDoneDownloading = false;
-                        System.out.println("Peer " + set.getValue().getId() + " is not done");
+                boolean allPeersDoneDownloading = false;
+                Peer peerDone = null;
+                for(Peer p : peersDone){
+                    if(p.getBitfield().checkPiecesFilled()){
+                        peerDone = p;
                         break;
                     }
                 }
+                if(peerDone != null)
+                    peersDone.remove(peerDone);
+                if(peersDone.isEmpty()){
+                    allPeersDoneDownloading = true;
+                }
                 if(allPeersDoneDownloading){
-                    System.out.println("doneeeeee");
+                    System.out.println("All peers are done");
+                    shouldStopThreads = true;
+                    for(Socket s : peerProcess.clientConnections){
+                        try {
+                            s.close();
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+                    for(Thread th : peerProcess.threads){
+                        System.out.println(th.getId());
+                        System.out.println(th.getName());
+                        th.interrupt();
+                    }
                     try {
+                        System.out.println("closing server socket");
                         listener.close();
-                        break;
+                        System.exit(0);
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
                 }
                 try {
-                    // checks every 10 seconds
-                    Thread.sleep(10000 );
+                    Thread.sleep(3000);
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }
@@ -73,25 +97,32 @@ public class PeerStarter extends Peer implements Runnable{
 
     // start a listening/server thread on this peer
     public synchronized void serverThread(){
-            new Thread(() -> {
-               while (!listener.isClosed()){
-                    peerServer server = new peerServer(peer, listener, log, peerSelector);
 
+        serverThread = new Thread(() -> {
+               while (!listener.isClosed()){
+                   peerServer server = new peerServer(peer, listener, log, peerSelector);
                    try {
-                       server.acceptClient();
+                       if(!listener.isClosed())
+                            server.acceptClient();
                    } catch (IOException e) {
-                       throw new RuntimeException(e);
+                       System.out.println("Closing server");
+                       Thread.currentThread().interrupt();
+                       System.exit(0);
                    }
                }
-            }).start();
+        });
+        serverThread.start();
+        serverThread.setName("server thread");
+        peerProcess.threads.add(serverThread);
     }
 
     public void initialize(PeerStarter process){
-        Thread t = new Thread(process);
+        t = new Thread(process);
+        t.setName("peerStarter thread");
         t.start();
 
-    }
 
+    }
 
     @Override
     public void run() {
@@ -100,18 +131,15 @@ public class PeerStarter extends Peer implements Runnable{
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-
+        peerSelector = new peerSelector(peer, allPeers,log, listener);
         // start client thread (will also start the message handling thread)
         try {
             clientThread();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-
         // start server thread (will also start the message handling thread)
         serverThread();
-
-
         // start the choking/unchoking of the peers
         peerSelector.start();
         terminateProgram();

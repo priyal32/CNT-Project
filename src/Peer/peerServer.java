@@ -10,7 +10,7 @@ import java.util.*;
 
 public class peerServer  {
 
-    ServerSocket listener;
+    volatile ServerSocket listener;
     Socket connection;
     ObjectInputStream in;
     ObjectOutputStream out;
@@ -26,7 +26,12 @@ public class peerServer  {
     }
 
     public synchronized void acceptClient() throws IOException {
+
+        System.out.println("in here");
+
+
         connection = listener.accept();
+        peerProcess.clientConnections.add(connection);
         out = new ObjectOutputStream(connection.getOutputStream());
         out.flush();
 
@@ -45,9 +50,9 @@ public class peerServer  {
         try {
             handshake.sendHandShake(out);
             out.flush();
-
         } catch (IOException ioException) {
-            ioException.printStackTrace();
+            System.out.println("Closing server");
+            Thread.currentThread().interrupt();
         }
 
         Peer connectionFrom = peerProcess.getPeer(handshake.getPeerId());
@@ -62,16 +67,8 @@ public class peerServer  {
         // send bitfield if it has any file pieces
         if(peer.getBitfield().totalPresentPieces > 0 || peer.haveFile()){
             byte[] bitfield = peer.getBitfield().getBytes();
-            //peer.getBitfield().printBytes(bitfield);
-           // System.out.println("bitfield byte length " + bitfield.length);
             connectionHandler.sendMessage(new Message(Type.BitField, bitfield));
-            //log.writer.println("Sent bitfield message from " + this.peer.getId() + " to " + handshake.getPeerId());
-
         }
-
-
-
     }
-
 }
 

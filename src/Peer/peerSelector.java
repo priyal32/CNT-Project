@@ -1,10 +1,8 @@
 package Peer;
 
-import Messages.Manager;
 import Messages.Message;
 import Messages.Type;
 
-import java.awt.*;
 import java.net.ServerSocket;
 import java.nio.ByteBuffer;
 import java.util.*;
@@ -13,21 +11,23 @@ import java.util.*;
 // TODO: whether the socket is closed or not since I think thats where the error is coming when socket.close() is used in PeerStarter
 public class peerSelector extends Thread{
     Peer src;
-
     HashMap<Integer, Peer> peers;
     final ArrayList<Peer> interestedPeers = new ArrayList<Peer>();
     ArrayList<Integer> prefPeers = new ArrayList<Integer>();
-
     ArrayList<Peer> kNPrefNeighborsPeers = new ArrayList<Peer>();
     Peer optUnchokedPeer;
     Log log;
     Common common = Common.readCommonFile("Common.cfg");
 
-    public peerSelector(Peer src, HashMap<Integer, Peer> peers, Log log)
+    ServerSocket listener;
+
+    public peerSelector(Peer src, HashMap<Integer, Peer> peers, Log log, ServerSocket listener)
     {
         this.src = src;
         this.peers = peers;
         this.log = log;
+        this.listener = listener;
+
     }
 
     static class sortInterestedPeers implements Comparator<Peer>
@@ -43,16 +43,16 @@ public class peerSelector extends Thread{
         }
     }
 
-    public void kPreferredNeighbors()
+    public synchronized void kPreferredNeighbors()
     {
 
 
         long time = common.getUnchokingInterval();
 
-        new Thread(() -> {
+        Thread kPref = new Thread(() -> {
             try
             {
-                while (true){
+                while (!PeerStarter.shouldStopThreads && !Thread.currentThread().isInterrupted()){
                     synchronized (interestedPeers)
                     {
                         if(!interestedPeers.isEmpty())
@@ -89,7 +89,6 @@ public class peerSelector extends Thread{
                                     temp.setRate(0);
                                     kNPrefNeighborsPeers.add(temp);
                                     if(!temp.isUnChoked){
-                                        System.out.println("in unchoke not optimistic");
                                         unchoke(temp); // not optimistic
                                     }
                                     i++;
@@ -110,21 +109,24 @@ public class peerSelector extends Thread{
                 }
 
             }
-            catch (Exception e){
-                e.printStackTrace();
+            catch (Exception e) {
+                Thread.currentThread().interrupt();
             }
-        }).start();
+        });
+        kPref.start();
+        kPref.setName("Kpref Neighbors thread");
+        peerProcess.threads.add(kPref);
     }
 
-    private void unchokeOptimistic()
+    private synchronized void unchokeOptimistic()
     {
         long time = common.getOptimisticUnChokingInterval();
 
-        new Thread(() -> {
+        Thread unchokeOpt = new Thread(() -> {
 
             try
             {
-                while(true){
+                while(!PeerStarter.shouldStopThreads && !Thread.currentThread().isInterrupted()){
                     synchronized (interestedPeers)
                     {
 
@@ -143,13 +145,7 @@ public class peerSelector extends Thread{
                                 int index_of_choked = random.nextInt(chokedPeers.size());
                                 Peer peer;
                                 peer = interestedPeers.get(index_of_choked);
-//                                while(!peer.isUnChoked){
-//                                    index_of_choked = random.nextInt(interestedPeers.size());
-//                                    peer = interestedPeers.get(index_of_choked);
-//                                }
                                 optUnchokedPeer = peer;
-                            //    System.out.println("in unchoke optimistic");
-
                                 if(!peer.isUnChoked) {
                                     unchoke(peer);
                                     log.optUnchokeMessage(peer.getId());
@@ -164,16 +160,20 @@ public class peerSelector extends Thread{
 
             }
             catch (Exception e){
-                e.printStackTrace();
+                Thread.currentThread().interrupt();
             }
-        }).start();
+        });
+        unchokeOpt.start();
+        unchokeOpt.setName("Unchoke Optimistic thread");
+        peerProcess.threads.add(unchokeOpt);
     }
 
     private synchronized void unchoke(Peer peer)
     {
         peer.isUnChoked = true;
         Message unchokeMsg = new Message(Type.Unchoke);
-        peer.getConnectionHandler().sendMessage(unchokeMsg);
+        if(peer.getConnectionHandler() != null && !PeerStarter.shouldStopThreads)
+            peer.getConnectionHandler().sendMessage(unchokeMsg);
     }
 
     public void sendHave(int index) {
@@ -183,7 +183,8 @@ public class peerSelector extends Thread{
             if(p.getConnectionHandler() != null){
                 byte[] payload = ByteBuffer.allocate(4).putInt(index).array();
                 Message message = new Message(Type.Have, payload);
-                p.getConnectionHandler().sendMessage(message);
+                if(p.getConnectionHandler() != null && !PeerStarter.shouldStopThreads)
+                    p.getConnectionHandler().sendMessage(message);
             }
         }
     }
@@ -191,13 +192,12 @@ public class peerSelector extends Thread{
     {
 
         for (Peer peer:interestedPeers) {
-           // log.writer.print("interested peers: " + peer.getId() + ", ");
-            // log.writer.println();
             if (!kNPrefNeighborsPeers.contains(peer) && peer != optUnchokedPeer && peer.getConnectionHandler() != null) {
                 if(peer.isUnChoked){
                     peer.isUnChoked = false;
                     Message chokeMsg = new Message(Type.Choke);
-                    peer.getConnectionHandler().sendMessage(chokeMsg);
+                    if(peer.getConnectionHandler() != null && !PeerStarter.shouldStopThreads)
+                        peer.getConnectionHandler().sendMessage(chokeMsg);
                 }
 
             }
@@ -208,7 +208,6 @@ public class peerSelector extends Thread{
     {
         kPreferredNeighbors();
         unchokeOptimistic();
-        System.out.println("ran all");
     }
 
 }
