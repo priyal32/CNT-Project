@@ -32,13 +32,13 @@ public class PeerStarter extends Peer implements Runnable{
 
     // establish connection to all the peers that started before this peer
     public synchronized void clientThread() throws IOException {
-                for(Peer p : peer.getBeforePeers()) {
-                    peerClient pc = new peerClient(peer, p, log, peerSelector);
-                    Thread pcThread = new Thread(pc);
-                    pcThread.setName("client thread");
-                    peerProcess.threads.add(pcThread);
-                    pcThread.start();
-                }
+        for(Peer p : peer.getBeforePeers()) {
+            peerClient pc = new peerClient(peer, p, log, peerSelector);
+            Thread pcThread = new Thread(pc);
+            pcThread.setName("client thread");
+            peerProcess.threads.add(pcThread);
+            pcThread.start();
+        }
 
     }
 
@@ -97,17 +97,17 @@ public class PeerStarter extends Peer implements Runnable{
     public synchronized void serverThread(){
 
         serverThread = new Thread(() -> {
-               while (!listener.isClosed()){
-                   peerServer server = new peerServer(peer, listener, log, peerSelector);
-                   try {
-                       if(!listener.isClosed())
-                            server.acceptClient();
-                   } catch (IOException e) {
-                       System.out.println("Closing server");
-                       Thread.currentThread().interrupt();
-                       System.exit(0);
-                   }
-               }
+            while (!listener.isClosed()){
+                peerServer server = new peerServer(peer, listener, log, peerSelector);
+                try {
+                    if(!listener.isClosed())
+                        server.acceptClient();
+                } catch (IOException e) {
+                    System.out.println("Closing server");
+                    Thread.currentThread().interrupt();
+                    System.exit(0);
+                }
+            }
         });
         serverThread.start();
         serverThread.setName("server thread");

@@ -169,14 +169,14 @@ public class peerSelector extends Thread{
             peer.getConnectionHandler().sendMessage(unchokeMsg);
     }
 
-    public void sendHave(int index) {
+    public synchronized void sendHave(int index) {
 
 
         for(Peer p : peerProcess.allPeers.values()){
             if(p.getConnectionHandler() != null){
                 byte[] payload = ByteBuffer.allocate(4).putInt(index).array();
                 Message message = new Message(Type.Have, payload);
-                if(p.getConnectionHandler() != null && !PeerStarter.shouldStopThreads)
+                if(p.getConnectionHandler() != null)
                     p.getConnectionHandler().sendMessage(message);
             }
         }

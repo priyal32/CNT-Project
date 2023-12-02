@@ -28,13 +28,13 @@ public class Bitfield extends Message{
         }
     }
 
-    public void setPiece(int index){
+    public synchronized void setPiece(int index){
 
         pieces[index].setPresent(1);
         totalPresentPieces++;
     }
 
-    public boolean checkPiecesFilled(){
+    public synchronized boolean checkPiecesFilled(){
         for(Piece piece : pieces){
             if(piece.isPresent() == 0){
                 return false;
@@ -61,7 +61,7 @@ public class Bitfield extends Message{
     }
 
 
-    public byte[] getBytes(){
+    public synchronized byte[] getBytes(){
         int size = this.numPieces/8;
         if(numPieces % 8 != 0){
             size = size + 1;

@@ -66,13 +66,13 @@ public class Log {
         writer.flush();
     }
 
-    public void DownloadedPiece(int peerId1, int index, int pieces){
+    public synchronized void DownloadedPiece(int peerId1, int index, int pieces){
         String timeStamp = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss").format(Calendar.getInstance().getTime());
         writer.println(timeStamp + " Peer " + peerId + " has downloaded the piece " + index  + " from " + peerId1 + ".\nNow the number of pieces it has is " + pieces);
         writer.flush();
     }
 
-    public void fileDownloaded(){
+    public synchronized void fileDownloaded(){
         String timeStamp = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss").format(Calendar.getInstance().getTime());
         writer.println(timeStamp + " Peer " + peerId + " has downloaded the complete file.");
         writer.flush();

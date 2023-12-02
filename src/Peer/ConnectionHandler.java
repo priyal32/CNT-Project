@@ -152,8 +152,7 @@ public class ConnectionHandler extends Thread {
 
                         Manager.store(data);
 
-                        hasPieces++;
-                        System.out.println("Has " + hasPieces + " pieces downloaded.");
+                        System.out.println("Has " + Manager.numAvailable + " pieces downloaded.");
                         log.DownloadedPiece(dest.getId(), index, Manager.numAvailable);
                         peerSelector.sendHave(index);
 

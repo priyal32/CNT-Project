@@ -20,6 +20,9 @@ public class Manager {
 
     static Peer src;
 
+    public static synchronized void increaseNumAvailable(){
+        numAvailable++;
+    }
     public Manager(Peer src) {
         directory = "peer_" + src.getId() + "/";
         Manager.src = src;
@@ -70,8 +73,11 @@ public class Manager {
 
     }
 
-    public static void store(byte[] payload) throws Exception {
+    public synchronized static void store(byte[] payload) throws Exception {
         int index = readIntFromStream(payload);
+        if(src.getBitfield().pieces[index].isPresent() == 1){
+            return;
+        }
 
         byte[] content = new byte[payload.length - 4];
         System.arraycopy(payload, 4, content, 0, content.length);
@@ -83,9 +89,9 @@ public class Manager {
             fos.seek(loc);
             fos.write(content);
             fos.close();
-            numAvailable++;
-
             src.getBitfield().setPiece(index);
+            increaseNumAvailable();
+
 
         } catch (IOException e) {
             e.printStackTrace();
